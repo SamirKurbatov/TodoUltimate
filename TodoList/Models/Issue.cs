@@ -1,7 +1,7 @@
 [Serializable]
 public record class Issue : BaseModel
 {
-    public string Title { get; private set; }
+    public string Title { get; set; }
     
     public DateTime CreatedDate { get; private set; }
 

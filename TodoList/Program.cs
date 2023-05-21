@@ -22,7 +22,7 @@ while (isContinue == true)
             break;
         case ConsoleKey.D3:
             index = GetIndex("задачу", "редактировать");
-            issueManager.Update(index);
+            issueManager.Update(index, Console.ReadLine());
             break;
         case ConsoleKey.D4:
             break;
