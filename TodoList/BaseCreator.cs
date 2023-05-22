@@ -1,4 +1,4 @@
-public abstract class BaseCreator
+public abstract class BaseCreator<T>
 {
-    public abstract BaseModel Create();
+    public abstract T Create();
 }

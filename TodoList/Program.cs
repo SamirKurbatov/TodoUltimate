@@ -1,6 +1,8 @@
 ﻿using TodoList;
 
-var issueManager = new IssueManager();
+IRepository jsonRepository = new JsonRepository();
+
+var issueManager = new IssueManager(jsonRepository, "issue.json");
 
 bool isContinue = true;
 
@@ -25,6 +27,8 @@ while (isContinue == true)
             issueManager.Update(index, Console.ReadLine());
             break;
         case ConsoleKey.D4:
+            index = GetIndex("задачу", "отметить как выполненная");
+            issueManager.ChangeIsDone(index);
             break;
         case ConsoleKey.D5:
             break;

@@ -1,8 +1,8 @@
 namespace TodoList
 {
-    public class IssueCreator : BaseCreator
+    public class IssueCreator : BaseCreator<Issue>
     {
-        public override BaseModel Create()
+        public override Issue Create()
         {
             Console.Write("Введите название задачи: ");
             var title = Console.ReadLine() ?? "Вы ничего не ввели! ";
