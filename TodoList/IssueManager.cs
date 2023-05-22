@@ -39,16 +39,28 @@ public class IssueManager
     {
         CheckExistsId(id);
 
-        if (models.TryGetValue(id, out BaseModel existingModel))
+        ChangeData(id, issue => issue.Title = title, "обновлена");
+    }
+
+    public void ChangeIsDone(int id)
+    {
+        CheckExistsId(id);
+
+        ChangeData(id, issue => issue.IsCompleted = true, "помечена как выполненная");
+    }
+
+    private void ChangeData(int id, Action<Issue> updateAction, string action)
+    {
+        if (models.TryGetValue(id, out BaseModel? existingModel))
         {
             if (existingModel is Issue existingIssue)
             {
-                existingIssue.Title = title;
-                System.Console.WriteLine($"Задача {id} обновлена! ");
+                updateAction(existingIssue);
+                System.Console.WriteLine($"Задача {id} отмечена как выполненная! ");
             }
             else
             {
-                System.Console.WriteLine($"Задача {id} не является типом Issue и не может быть обновлена! ");
+                System.Console.WriteLine($"Задача {id} не является типом {nameof(Issue)} и не может быть {action}! ");
             }
         }
     }
