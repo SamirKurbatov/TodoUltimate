@@ -11,6 +11,7 @@ public class IssueManager : BaseManager<Issue>
     {
         base.Add();
     }
+
     public override void Remove(int id)
     {
         base.Remove(id);
@@ -18,21 +19,11 @@ public class IssueManager : BaseManager<Issue>
 
     public override void ChangeIsDone(int id)
     {
-        base.ChangeIsDone(id);
-
-        ChangeData(id, issue =>
-        {
-            issue.IsCompleted = true;
-        }, "помечена как выполненная");
+        ChangeData(id, x => x.IsCompleted = true, "отмечен(а) как выполненная");
     }
 
     public override void Update(int id, string title)
     {
-        base.Update(id, title);
-
-        ChangeData(id, issue =>
-        {
-            issue.IsCompleted = true;
-        }, "обновлена");
+        ChangeData(id, x => x.Title = title, "обновлен");
     }
 }

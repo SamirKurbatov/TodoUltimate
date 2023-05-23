@@ -1,6 +1,6 @@
 namespace TodoList;
 
-public class BaseManager<TModel> where TModel : BaseModel
+public abstract class BaseManager<TModel> where TModel : BaseModel
 {
     public BaseManager(IRepository repository, string path)
     {
@@ -37,39 +37,29 @@ public class BaseManager<TModel> where TModel : BaseModel
 
         models.Add(idCounter, model);
 
-        Save();
+        repository.Save(PATH, models);
 
         System.Console.WriteLine($"{typeof(TModel).Name} добавлен(а)! ");
     }
 
     public virtual void Remove(int id)
     {
-        CheckExistsId(id);
         models.Remove(id);
-
-        Save();
-
-        System.Console.WriteLine($"{typeof(TModel).Name} {id} удален(а)! ");
+        repository.Save(PATH, models);
     }
 
-    public virtual void Update(int id, string title)
-    {
-        CheckExistsId(id);
-    }
-
-    public virtual void ChangeIsDone(int id)
-    {
-        CheckExistsId(id);
-    }
+    public abstract void Update(int id, string title);
+    public abstract void ChangeIsDone(int id);
 
     protected void ChangeData(int id, Action<TModel> updateAction, string action)
     {
+        CheckExistsId(id, action);
+
         if (models.TryGetValue(id, out TModel? existingModel))
         {
             if (existingModel is TModel existingIssue)
             {
                 updateAction(existingIssue);
-                System.Console.WriteLine($"{typeof(TModel).Name} {id} отмечен(а) как выполнен(ая)! ");
             }
             else
             {
@@ -83,16 +73,15 @@ public class BaseManager<TModel> where TModel : BaseModel
         return repository.Load<int, TModel>(PATH);
     }
 
-    private void Save()
-    {
-        repository.Save(PATH, models);
-    }
-
-    private void CheckExistsId(int id)
+    private void CheckExistsId(int id, string action)
     {
         if (models.ContainsKey(id) == false)
         {
             System.Console.WriteLine($"{typeof(TModel).Name} {id} не найден(а)! ");
+        }
+        else
+        {
+            System.Console.WriteLine($"{typeof(TModel).Name} {id} {action}! ");
         }
     }
 

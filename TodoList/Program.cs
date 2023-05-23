@@ -15,24 +15,22 @@ while (isContinue == true)
     System.Console.WriteLine();
     switch (input.Key)
     {
-        case ConsoleKey.D1:
+        case MenuCommands.Add:
             issueManager.Add();
             break;
-        case ConsoleKey.D2:
+        case MenuCommands.Remove:
             index = GetIndex("задачу", "удалить");
             issueManager.Remove(index);
             break;
-        case ConsoleKey.D3:
+        case MenuCommands.Edit:
             index = GetIndex("задачу", "редактировать");
             issueManager.Update(index, Console.ReadLine());
             break;
-        case ConsoleKey.D4:
+        case MenuCommands.IsDone:
             index = GetIndex("задачу", "отметить как выполненная");
             issueManager.ChangeIsDone(index);
             break;
-        case ConsoleKey.D5:
-            break;
-        case ConsoleKey.D6:
+        case MenuCommands.Exit:
             isContinue = false;
             if (isContinue)
             {
@@ -41,7 +39,7 @@ while (isContinue == true)
                 return;
             }
             break;
-        case ConsoleKey.D7:
+        case MenuCommands.Print:
             System.Console.WriteLine("Задачи: ");
             issueManager.Print();
             System.Console.WriteLine();
