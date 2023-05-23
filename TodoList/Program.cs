@@ -19,15 +19,15 @@ while (isContinue == true)
             issueManager.Add();
             break;
         case MenuCommands.Remove:
-            index = GetIndex("задачу", "удалить");
+            index = InputAndGetIndex("задачу", "удалить");
             issueManager.Remove(index);
             break;
         case MenuCommands.Edit:
-            index = GetIndex("задачу", "редактировать");
+            index = InputAndGetIndex("задачу", "редактировать");
             issueManager.Update(index, Console.ReadLine());
             break;
         case MenuCommands.IsDone:
-            index = GetIndex("задачу", "отметить как выполненная");
+            index = InputAndGetIndex("задачу", "отметить как выполненная");
             issueManager.ChangeIsDone(index);
             break;
         case MenuCommands.Exit:
@@ -53,7 +53,7 @@ while (isContinue == true)
 }
 
 
-int GetIndex(string title, string action)
+int InputAndGetIndex(string title, string action)
 {
     issueManager.Print();
     Console.Write($"Введите {title} который(ую) хотите {action}: ");
