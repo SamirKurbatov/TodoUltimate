@@ -1,6 +1,6 @@
 ﻿using TodoList;
 
-BaseRepository jsonRepository = new JsonRepository("issue.json");
+BaseRepository jsonRepository = new JsonRepository("data.json");
 
 var issueManager = new IssueManager(jsonRepository);
 

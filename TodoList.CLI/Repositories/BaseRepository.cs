@@ -3,7 +3,6 @@ namespace TodoList;
 public abstract class BaseRepository
 {
     protected readonly string FilePath;
-
     protected BaseRepository(string filePath)
     {
         FilePath = filePath;

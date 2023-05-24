@@ -4,10 +4,10 @@ namespace TodoList;
 
 public class JsonRepository : BaseRepository
 {
-    private readonly string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+    private readonly string dataFolderPath = "C:/Users/user/Desktop/super-fortnight/TodoList.CLI/Data";
 
     public JsonRepository(string filePath) : base(filePath) { }
-    
+
     public override Dictionary<TKey, TValue> Load<TKey, TValue>()
     {
         try
@@ -50,7 +50,9 @@ public class JsonRepository : BaseRepository
             WriteIndented = true
         };
 
+        string jsonFilePath = Path.Combine(dataFolderPath, FilePath);
+
         string jsonString = JsonSerializer.Serialize(value, options);
-        File.WriteAllText(FilePath, jsonString);
+        File.WriteAllText(jsonFilePath, jsonString);
     }
 }
