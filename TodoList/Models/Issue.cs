@@ -2,19 +2,14 @@
 public record class Issue : BaseModel
 {
     public string Title { get; set; }
-    
+
     public DateTime CreatedDate { get; private set; }
 
-    public bool IsCompleted { get; set; }    
+    public bool IsCompleted { get; set; }
 
-    public Issue(string title)
+    public Issue(string title) : base()
     {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            throw new ArgumentNullException(nameof(title), "не может иметь пустое значение");
-        }
-
-        Title =  title;
+        Title = title;
         CreatedDate = DateTime.UtcNow;
     }
 }

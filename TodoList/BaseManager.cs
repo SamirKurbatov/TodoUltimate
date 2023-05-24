@@ -18,49 +18,66 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
         PATH = path;
         models = GetModels();
 
-        TaskAdded += OnTaskAdded;
-        TaskRemoved += OnTaskRemoved;
-        TaskNotFound += OnTaskNotFound;
+        ModelAdded += OnAdded;
+        ModelRemoved += OnRemoved;
+        ModelNotFound += OnNotFound;
     }
-    protected event Action<TModel> TaskAdded;
-    protected event Action<int> TaskRemoved;
-    protected event Action<int> TaskNotFound;
-    protected event Action<TModel, string> ChangeDataUpdate;
 
-    private Dictionary<int, TModel> models;
+    protected event Action<TModel> ModelAdded;
+    protected event Action<int> ModelRemoved;
+    protected event Action<int> ModelNotFound;
+    protected Dictionary<int, TModel> models;
 
     protected BaseCreator<TModel> creator;
 
-    private IRepository repository;
-
-    protected int idCounter = 0;
+    protected IRepository repository;
 
     protected readonly string PATH;
 
     public virtual void Add()
     {
         TModel model = creator.Create();
+        
+        var modelIndex = models.Keys.Count + 1;
 
-        model.Id = idCounter + 1;
-        idCounter++;
-
-        models.Add(idCounter, model);
+        models.Add(modelIndex, model);
 
         repository.Save(PATH, models);
 
-        TaskAdded?.Invoke(model);
+        ModelAdded?.Invoke(model);
     }
 
-    public virtual void Remove(int id)
+    public virtual void Remove(int index)
     {
-        models.Remove(id);
+        if (models.ContainsKey(index))
+        {
+            models.Remove(index);
 
-        repository.Save(PATH, models);
+            var updatedModels = new Dictionary<int, TModel>();
+            int newIndex = 1;
 
-        TaskRemoved?.Invoke(id);
+            foreach (KeyValuePair<int, TModel> kvp in models)
+            {
+                if (kvp.Key != index)
+                {
+                    updatedModels.Add(newIndex, kvp.Value);
+                    newIndex++;
+                }
+            }
+
+            models = updatedModels;
+
+            repository.Save(PATH, models);
+
+            ModelRemoved?.Invoke(index);
+        }
+        else
+        {
+            ModelNotFound?.Invoke(index);
+        }
     }
 
-    public abstract void Update(int id, string title);
+    public abstract void Edit(int id, string title);
     public abstract void ChangeIsDone(int id);
 
     protected void ChangeData(int id, Action<TModel, string> updateAction, string actionInfo)
@@ -72,6 +89,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
             if (existingModel is TModel existingIssue)
             {
                 updateAction?.Invoke(existingIssue, actionInfo);
+
             }
             else
             {
@@ -89,7 +107,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     {
         if (models.ContainsKey(id) == false)
         {
-            TaskNotFound?.Invoke(id);
+            ModelNotFound?.Invoke(id);
         }
     }
 
@@ -97,15 +115,15 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     {
         foreach (var issue in models.OrderBy(x => x.Key))
         {
-            Console.WriteLine(issue.Value);
+            Console.Write($"{issue.Key}) {issue.Value}\n");
         }
     }
 
-    public abstract void OnTaskAdded(TModel issue);
+    protected abstract void OnAdded(TModel model);
 
-    public abstract void OnTaskRemoved(int id);
+    protected abstract void OnRemoved(int id);
 
-    public abstract void OnTaskNotFound(int id);
+    protected abstract void OnNotFound(int id);
 
-    public abstract void OnDataChangedUpdated(TModel model, string updateInfo);
+    protected abstract void OnDataChangedUpdated(TModel model, string updateInfo);
 }

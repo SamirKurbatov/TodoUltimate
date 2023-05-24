@@ -5,7 +5,13 @@ namespace TodoList
         public override Issue Create()
         {
             Console.Write("Введите название задачи: ");
-            var title = Console.ReadLine() ?? "Вы ничего не ввели! ";
+            string? title;
+            do
+            {
+                title = Console.ReadLine();
+                Console.Write("Вы ничего не ввели попробуйте еще раз!\n");
+            } while (string.IsNullOrWhiteSpace(title));
+
             return new Issue(title);
         }
     }

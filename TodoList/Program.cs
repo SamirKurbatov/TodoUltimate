@@ -24,7 +24,7 @@ while (isContinue == true)
             break;
         case MenuCommands.Edit:
             index = InputAndGetIndex("задачу", "редактировать");
-            issueManager.Update(index, Console.ReadLine());
+            issueManager.Edit(index, Console.ReadLine());
             break;
         case MenuCommands.IsDone:
             index = InputAndGetIndex("задачу", "отметить как выполненная");
