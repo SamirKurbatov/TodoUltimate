@@ -1,8 +1,8 @@
 ﻿using TodoList;
 
-IRepository jsonRepository = new JsonRepository();
+BaseRepository jsonRepository = new JsonRepository("issue.json");
 
-var issueManager = new IssueManager(jsonRepository, "issue.json");
+var issueManager = new IssueManager(jsonRepository);
 
 bool isContinue = true;
 

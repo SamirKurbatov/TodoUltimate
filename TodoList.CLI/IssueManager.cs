@@ -2,7 +2,7 @@ namespace TodoList;
 public class IssueManager : BaseManager<Issue>
 {
     protected event Action<Issue, string> ChangeDataUpdate;
-    public IssueManager(IRepository repository, string path) : base(repository, path)
+    public IssueManager(BaseRepository repository) : base(repository)
     {
         creator = new IssueCreator();
         ChangeDataUpdate += OnDataChangedUpdated;
@@ -16,7 +16,7 @@ public class IssueManager : BaseManager<Issue>
             ChangeDataUpdate?.Invoke(issue, isDoneInfo);
         }, "отмечена как выполнен(ая)");
 
-        repository.Save(PATH, models);
+        repository.Save(models);
     }
 
     public override void Edit(int id, string title)
@@ -27,7 +27,7 @@ public class IssueManager : BaseManager<Issue>
             ChangeDataUpdate?.Invoke(issue, updateInfo);
         }, "обновлен(а)");
 
-        repository.Save(PATH, models);
+        repository.Save(models);
     }
 
     protected override void OnAdded(Issue issue)

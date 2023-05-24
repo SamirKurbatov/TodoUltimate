@@ -2,22 +2,15 @@ namespace TodoList;
 
 public abstract class BaseManager<TModel> where TModel : BaseModel
 {
-    public BaseManager(IRepository repository, string path)
+    public BaseManager(BaseRepository repository)
     {
         if (repository == null)
         {
             throw new ArgumentNullException(nameof(repository), "Не может иметь пустое значение! ");
         }
 
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentNullException(nameof(path), "Не может быть иметь пустое начение! ");
-        }
-
         this.repository = repository;
-        PATH = path;
         models = GetModels();
-
         ModelAdded += OnAdded;
         ModelRemoved += OnRemoved;
         ModelNotFound += OnNotFound;
@@ -30,9 +23,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
     protected BaseCreator<TModel> creator;
 
-    protected IRepository repository;
-
-    protected readonly string PATH;
+    protected BaseRepository repository;
 
     public virtual void Add()
     {
@@ -42,7 +33,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
         models.Add(modelIndex, model);
 
-        repository.Save(PATH, models);
+        repository.Save(models);
 
         ModelAdded?.Invoke(model);
     }
@@ -67,7 +58,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
             models = updatedModels;
 
-            repository.Save(PATH, models);
+            repository.Save(models);
 
             ModelRemoved?.Invoke(index);
         }
@@ -89,7 +80,6 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
             if (existingModel is TModel existingIssue)
             {
                 updateAction?.Invoke(existingIssue, actionInfo);
-
             }
             else
             {
@@ -100,7 +90,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
     private Dictionary<int, TModel> GetModels()
     {
-        return repository.Load<int, TModel>(PATH);
+        return repository.Load<int, TModel>();
     }
 
     private void CheckExistsId(int id)

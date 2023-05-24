@@ -2,15 +2,19 @@ using System.Text.Json;
 
 namespace TodoList;
 
-public class JsonRepository : IRepository
+public class JsonRepository : BaseRepository
 {
-    public Dictionary<TKey, TValue> Load<TKey, TValue>(string filePath)
+    private readonly string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
+    public JsonRepository(string filePath) : base(filePath) { }
+    
+    public override Dictionary<TKey, TValue> Load<TKey, TValue>()
     {
         try
         {
-            if (File.Exists(filePath) == true)
+            if (File.Exists(FilePath) == true)
             {
-                using (var fs = new FileStream(filePath, FileMode.OpenOrCreate))
+                using (var fs = new FileStream(FilePath, FileMode.OpenOrCreate))
                 {
                     if (JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(fs) is Dictionary<TKey, TValue> items)
                     {
@@ -29,19 +33,24 @@ public class JsonRepository : IRepository
         }
         catch (JsonException ex)
         {
-            System.Console.WriteLine($"Error deserialize file {filePath}: {ex.Message}");
+            System.Console.WriteLine($"Error deserialize file {FilePath}: {ex.Message}");
             return new Dictionary<TKey, TValue>();
         }
     }
 
-    public void Save<T>(string filePath, T value)
+    public override void Save<T>(T value)
     {
+        if (Directory.Exists(dataFolderPath) == false)
+        {
+            Directory.CreateDirectory(dataFolderPath);
+        }
+
         var options = new JsonSerializerOptions()
         {
             WriteIndented = true
         };
 
         string jsonString = JsonSerializer.Serialize(value, options);
-        File.WriteAllText(filePath, jsonString);
+        File.WriteAllText(FilePath, jsonString);
     }
 }
