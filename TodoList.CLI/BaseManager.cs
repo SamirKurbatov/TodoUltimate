@@ -74,6 +74,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     protected void ChangeData(int id, Action<TModel, string> updateAction, string actionInfo)
     {
         CheckExistsId(id);
+        
 
         if (models.TryGetValue(id, out TModel? existingModel))
         {

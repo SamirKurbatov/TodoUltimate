@@ -12,6 +12,12 @@ public class IssueManager : BaseManager<Issue>
     {
         ChangeData(id, (issue, isDoneInfo) =>
         {
+            if (issue.IsCompleted == true)
+            {
+                Console.WriteLine($"Задача {id} уже отмечена как выполненная");
+                return;
+            }
+
             issue.IsCompleted = true;
             ChangeDataUpdate?.Invoke(issue, isDoneInfo);
         }, "отмечена как выполнен(ая)");

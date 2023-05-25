@@ -5,16 +5,20 @@ namespace TodoList;
 public class JsonRepository : BaseRepository
 {
     private readonly string dataFolderPath = "C:/Users/user/Desktop/super-fortnight/TodoList.CLI/Data";
+    private string jsonFilePath;
 
-    public JsonRepository(string filePath) : base(filePath) { }
+    public JsonRepository(string filePath) : base(filePath)
+    {
+        jsonFilePath = Path.Combine(dataFolderPath, filePath);
+    }
 
     public override Dictionary<TKey, TValue> Load<TKey, TValue>()
     {
         try
         {
-            if (File.Exists(FilePath) == true)
+            if (File.Exists(jsonFilePath) == true)
             {
-                using (var fs = new FileStream(FilePath, FileMode.OpenOrCreate))
+                using (var fs = new FileStream(jsonFilePath, FileMode.OpenOrCreate))
                 {
                     if (JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(fs) is Dictionary<TKey, TValue> items)
                     {
@@ -49,8 +53,6 @@ public class JsonRepository : BaseRepository
         {
             WriteIndented = true
         };
-
-        string jsonFilePath = Path.Combine(dataFolderPath, FilePath);
 
         string jsonString = JsonSerializer.Serialize(value, options);
         File.WriteAllText(jsonFilePath, jsonString);

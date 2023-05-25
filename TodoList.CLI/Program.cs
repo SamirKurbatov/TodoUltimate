@@ -1,4 +1,5 @@
 ﻿using TodoList;
+using System;
 
 BaseRepository jsonRepository = new JsonRepository("data.json");
 
@@ -12,7 +13,7 @@ while (isContinue == true)
 {
     PrintMenu();
     var input = Console.ReadKey();
-    System.Console.WriteLine();
+    Console.WriteLine();
     switch (input.Key)
     {
         case MenuCommands.Add:
@@ -40,12 +41,12 @@ while (isContinue == true)
             }
             break;
         case MenuCommands.Print:
-            System.Console.WriteLine("Задачи: ");
+            Console.WriteLine("Задачи: ");
             issueManager.Print();
-            System.Console.WriteLine();
+            Console.WriteLine();
             break;
         default:
-            System.Console.WriteLine("Такой клавиши нету, попробуйте еще раз! ");
+            Console.WriteLine("Такой клавиши нету, попробуйте еще раз! ");
             Console.ReadKey();
             Console.Clear();
             break;
@@ -53,10 +54,10 @@ while (isContinue == true)
 }
 
 
-int InputAndGetIndex(string title, string action)
+int InputAndGetIndex(string title, string actionInfo)
 {
     issueManager.Print();
-    Console.Write($"Введите {title} который(ую) хотите {action}: ");
+    Console.Write($"Введите {title} который(ую) хотите {actionInfo}: ");
     var issueIndex = Convert.ToInt32(Console.ReadLine());
     return issueIndex;
 }
