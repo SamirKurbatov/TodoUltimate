@@ -1,4 +1,4 @@
-namespace TodoList;
+namespace TodoList.CLI;
 
 public class IssueConsoleCreator : BaseCreator<IssueModel>
 {

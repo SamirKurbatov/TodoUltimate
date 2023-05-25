@@ -1,8 +1,8 @@
 using TodoList.CLI.Repositories;
 
-namespace TodoList;
+namespace TodoList.CLI;
 
-public abstract class BaseManager<TModel> where TModel : BaseModel
+public class BaseManager<TModel> where TModel : BaseModel
 {
     public BaseManager(BaseRepository repository, BaseCreator<TModel> baseCreator)
     {
@@ -19,6 +19,8 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
         ModelNotFound += OnNotFound;
         ChangeDataUpdate += OnDataChangedUpdated;
     }
+
+    public BaseManager() { }
 
     protected event Action<TModel> ModelAdded;
     protected event Action<int> ModelRemoved;
@@ -107,6 +109,13 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
         return repository.Load<TModel>();
     }
 
+    public int InputAndGetIndex(string title, string actionInfo)
+    {
+        Console.Write($"Введите {title} который(ую) хотите {actionInfo}: ");
+        var issueIndex = Convert.ToInt32(Console.ReadLine());
+        return issueIndex;
+    }
+    
     public void Print()
     {
         foreach (var model in models.Data.OrderBy(x => x.Key))

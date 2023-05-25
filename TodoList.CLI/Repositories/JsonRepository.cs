@@ -1,7 +1,7 @@
 using System.Text.Json;
 using TodoList.CLI.Repositories;
 
-namespace TodoList;
+namespace TodoList.CLI;
 
 public class JsonRepository : BaseRepository
 {

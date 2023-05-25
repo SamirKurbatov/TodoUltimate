@@ -1,6 +1,6 @@
 using TodoList.CLI.Repositories;
 
-namespace TodoList;
+namespace TodoList.CLI;
 
 public abstract class BaseRepository
 {
