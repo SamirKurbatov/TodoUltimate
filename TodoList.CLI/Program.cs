@@ -23,15 +23,15 @@ while (isContinue == true)
     switch (input.Key)
     {
         case MenuCommands.Add:
-            issueManager.Add();
+            groupManager.Add();
             break;
         case MenuCommands.Remove:
             index = InputAndGetIndex("группу", "удалить");
-            issueManager.Remove(index);
+            groupManager.Remove(index);
             break;
         case MenuCommands.Edit:
             index = InputAndGetIndex("группу", "редактировать");
-            issueManager.Edit(index, Console.ReadLine());
+            groupManager.Edit(index, Console.ReadLine());
             break;
         case MenuCommands.IsDone:
             index = InputAndGetIndex("задачу", "отметить как выполненная");
@@ -64,7 +64,7 @@ while (isContinue == true)
 
 int InputAndGetIndex(string title, string actionInfo)
 {
-    issueManager.Print();
+    groupManager.Print();
     Console.Write($"Введите {title} который(ую) хотите {actionInfo}: ");
     var issueIndex = Convert.ToInt32(Console.ReadLine());
     return issueIndex;

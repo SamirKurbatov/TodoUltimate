@@ -11,16 +11,5 @@ namespace TodoList.CLI
         public GroupManager(BaseRepository repository, BaseCreator<GroupModel> creator) : base(repository, creator)
         {
         }
-
-        public override void Add()
-        {
-            GroupModel model = creator.Create();
-
-            var modelIndex = models.Data.Keys.Count + 1;
-
-            models.Data.Add(modelIndex, model);
-
-            repository.Save(models);
-        }
     }
 }
