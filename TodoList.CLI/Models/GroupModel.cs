@@ -7,6 +7,6 @@ public record GroupModel : BaseModel
 
     public GroupModel(string title) : base(title)
     {
-        Title = title;
+        CreatedDate = DateTime.UtcNow;
     }
 }

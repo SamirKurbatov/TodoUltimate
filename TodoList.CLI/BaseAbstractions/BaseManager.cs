@@ -1,8 +1,10 @@
+using TodoList.CLI.Repositories;
+
 namespace TodoList;
 
 public abstract class BaseManager<TModel> where TModel : BaseModel
 {
-    public BaseManager(BaseRepository repository)
+    public BaseManager(BaseRepository repository, BaseCreator<TModel> baseCreator)
     {
         if (repository == null)
         {
@@ -10,6 +12,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
         }
 
         this.repository = repository;
+        creator = baseCreator;
         models = GetModels();
         ModelAdded += OnAdded;
         ModelRemoved += OnRemoved;
@@ -21,7 +24,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     protected event Action<int> ModelRemoved;
     protected event Action<int> ModelNotFound;
     protected event Action<TModel, string> ChangeDataUpdate;
-    protected Dictionary<int, TModel> models;
+    protected TodoData<TModel> models;
     protected BaseCreator<TModel> creator;
 
     protected BaseRepository repository;
@@ -30,9 +33,9 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     {
         TModel model = creator.Create();
 
-        var modelIndex = models.Keys.Count + 1;
+        var modelIndex = models.Data.Keys.Count + 1;
 
-        models.Add(modelIndex, model);
+        models.Data.Add(modelIndex, model);
 
         repository.Save(models);
 
@@ -41,18 +44,18 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
     public virtual void Remove(int index)
     {
-        if (models.ContainsKey(index))
+        if (models.Data.ContainsKey(index))
         {
-            models.Remove(index);
+            models.Data.Remove(index);
 
-            var updatedModels = new Dictionary<int, TModel>();
+            var updatedModels = new TodoData<TModel>();
             int newIndex = 1;
 
-            foreach (KeyValuePair<int, TModel> kvp in models)
+            foreach (KeyValuePair<int, TModel> kvp in models.Data)
             {
                 if (kvp.Key != index)
                 {
-                    updatedModels.Add(newIndex, kvp.Value);
+                    updatedModels.Data.Add(newIndex, kvp.Value);
                     newIndex++;
                 }
             }
@@ -80,12 +83,12 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
     protected void ChangeData(int id, Action<TModel> action, string actionInfo)
     {
-        if (models.ContainsKey(id) == false)
+        if (models.Data.ContainsKey(id) == false)
         {
             ModelNotFound?.Invoke(id);
         }
 
-        if (models.TryGetValue(id, out TModel? existingBaseModel))
+        if (models.Data.TryGetValue(id, out TModel? existingBaseModel))
         {
             if (existingBaseModel is TModel existingModel)
             {
@@ -99,16 +102,16 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
         }
     }
 
-    private Dictionary<int, TModel> GetModels()
+    private TodoData<TModel> GetModels()
     {
-        return repository.Load<int, TModel>();
+        return repository.Load<TModel>();
     }
 
     public void Print()
     {
-        foreach (var issue in models.OrderBy(x => x.Key))
+        foreach (var model in models.Data.OrderBy(x => x.Key))
         {
-            Console.Write($"{issue.Key}) {issue.Value}\n");
+            Console.Write($"{model.Key}) {model.Value}\n");
         }
     }
 

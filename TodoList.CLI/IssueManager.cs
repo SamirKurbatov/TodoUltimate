@@ -1,9 +1,8 @@
 namespace TodoList;
 public class IssueManager : BaseManager<IssueModel>
 {
-    public IssueManager(BaseRepository repository) : base(repository)
+    public IssueManager(BaseRepository repository, BaseCreator<IssueModel> creator) : base(repository, creator)
     {
-        creator = new IssueConsoleCreator();
     }
 
     public void ChangeIsDone(int id)

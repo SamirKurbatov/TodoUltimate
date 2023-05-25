@@ -1,12 +1,14 @@
+using TodoList.CLI.Repositories;
+
 namespace TodoList;
 
 public abstract class BaseRepository
 {
-    protected readonly string FilePath;
-    protected BaseRepository(string filePath)
+    public string FileName { get; set; }
+    protected BaseRepository(string fileName)
     {
-        FilePath = filePath;
+        FileName = fileName;
     }
-    public abstract void Save<T>(T value);
-    public abstract Dictionary<TKey, TValue> Load<TKey, TValue>();
+    public abstract void Save<T>(TodoData<T> value);
+    public abstract TodoData<T> Load<T>();
 }

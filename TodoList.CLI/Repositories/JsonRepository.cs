@@ -1,48 +1,50 @@
 using System.Text.Json;
+using TodoList.CLI.Repositories;
 
 namespace TodoList;
 
 public class JsonRepository : BaseRepository
 {
     private readonly string dataFolderPath = "C:/Users/user/Desktop/super-fortnight/TodoList.CLI/Data";
+
     private string jsonFilePath;
 
-    public JsonRepository(string filePath) : base(filePath)
+    public JsonRepository(string fileName) : base(fileName)
     {
-        jsonFilePath = Path.Combine(dataFolderPath, filePath);
+        jsonFilePath = Path.Combine(dataFolderPath, FileName);
     }
 
-    public override Dictionary<TKey, TValue> Load<TKey, TValue>()
+    public override TodoData<T> Load<T>()
     {
-        try
+         try
         {
             if (File.Exists(jsonFilePath) == true)
             {
                 using (var fs = new FileStream(jsonFilePath, FileMode.OpenOrCreate))
                 {
-                    if (JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(fs) is Dictionary<TKey, TValue> items)
+                    if (JsonSerializer.Deserialize<TodoData<T>>(fs) is TodoData<T> items)
                     {
                         return items;
                     }
                     else
                     {
-                        return new Dictionary<TKey, TValue>();
+                        return new TodoData<T>();
                     }
                 }
             }
             else
             {
-                return new Dictionary<TKey, TValue>();
+                return new TodoData<T>();
             }
         }
         catch (JsonException ex)
         {
-            System.Console.WriteLine($"Error deserialize file {FilePath}: {ex.Message}");
-            return new Dictionary<TKey, TValue>();
+            System.Console.WriteLine($"Error deserialize file {jsonFilePath}: {ex.Message}");
+            return new TodoData<T>();
         }
     }
 
-    public override void Save<T>(T value)
+    public override void Save<T>(TodoData<T> value)
     {
         if (Directory.Exists(dataFolderPath) == false)
         {

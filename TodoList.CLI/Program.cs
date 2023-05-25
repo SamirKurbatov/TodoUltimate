@@ -1,9 +1,15 @@
 ﻿using TodoList;
 using System;
+using TodoList.CLI;
 
 BaseRepository jsonRepository = new JsonRepository("data.json");
 
-var issueManager = new IssueManager(jsonRepository);
+var issueCreator = new IssueConsoleCreator();
+var groupCreator = new GroupConsoleCreator();
+
+var issueManager = new IssueManager(jsonRepository, issueCreator);
+
+var groupManager = new GroupManager(jsonRepository, groupCreator);
 
 bool isContinue = true;
 
@@ -11,7 +17,7 @@ int index = 0;
 
 while (isContinue == true)
 {
-    PrintMenu();
+    PrintMenu("группу");
     var input = Console.ReadKey();
     Console.WriteLine();
     switch (input.Key)
@@ -20,11 +26,11 @@ while (isContinue == true)
             issueManager.Add();
             break;
         case MenuCommands.Remove:
-            index = InputAndGetIndex("задачу", "удалить");
+            index = InputAndGetIndex("группу", "удалить");
             issueManager.Remove(index);
             break;
         case MenuCommands.Edit:
-            index = InputAndGetIndex("задачу", "редактировать");
+            index = InputAndGetIndex("группу", "редактировать");
             issueManager.Edit(index, Console.ReadLine());
             break;
         case MenuCommands.IsDone:
@@ -41,7 +47,9 @@ while (isContinue == true)
             }
             break;
         case MenuCommands.Print:
-            Console.WriteLine("Задачи: ");
+            Console.WriteLine("Группы: ");
+            groupManager.Print();
+            System.Console.WriteLine("Задачи: ");
             issueManager.Print();
             Console.WriteLine();
             break;
@@ -62,15 +70,15 @@ int InputAndGetIndex(string title, string actionInfo)
     return issueIndex;
 }
 
-void PrintMenu()
+void PrintMenu(string title)
 {
-    System.Console.WriteLine("1 - Добавить задачу");
-    System.Console.WriteLine("2 - Удалить задачу");
-    System.Console.WriteLine("3 - Редактировать задачу");
-    System.Console.WriteLine("4 - Отметить задачу как выполненная");
-    System.Console.WriteLine("5 - Отсортиовать по значению");
-    System.Console.WriteLine("6 - Выйти");
-    System.Console.WriteLine("7 - Вывести задачи");
+    System.Console.WriteLine($"1 - Добавить {title}");
+    System.Console.WriteLine($"2 - Удалить {title}");
+    System.Console.WriteLine($"3 - Редактировать {title}");
+    System.Console.WriteLine($"4 - Отметить {title} как выполненная");
+    System.Console.WriteLine($"5 - Отсортиовать по значению");
+    System.Console.WriteLine($"6 - Выйти");
+    System.Console.WriteLine($"7 - Вывести {title}");
 }
 
 // void SortMenu()
