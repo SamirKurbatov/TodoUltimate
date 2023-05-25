@@ -8,7 +8,10 @@ public class IssueManager : BaseManager<IssueModel>
 
     public void ChangeIsDone(int id)
     {
-        ChangeData(id, "отмечена как выполнен(ая)");
-        repository.Save(models);
+        ChangeData(id, data =>
+        {
+            data.IsCompleted = true;
+            repository.Save(models);
+        }, "отмечена как выполнена");
     }
 }

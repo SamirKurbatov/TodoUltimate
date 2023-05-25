@@ -71,26 +71,30 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
 
     public virtual void Edit(int id, string title)
     {
-        ChangeData(id, "обновлен");
-        repository.Save(models);
+        ChangeData(id, data =>
+        {
+            data.Title = title;
+            repository.Save(models);
+        }, "обновлен");
     }
 
-    protected void ChangeData(int id, string actionInfo)
+    protected void ChangeData(int id, Action<TModel> action, string actionInfo)
     {
         if (models.ContainsKey(id) == false)
         {
             ModelNotFound?.Invoke(id);
         }
 
-        if (models.TryGetValue(id, out TModel? existingModel))
+        if (models.TryGetValue(id, out TModel? existingBaseModel))
         {
-            if (existingModel is TModel existingIssue)
+            if (existingBaseModel is TModel existingModel)
             {
-                ChangeDataUpdate?.Invoke(existingIssue, actionInfo);
+                action?.Invoke(existingModel);
+                ChangeDataUpdate?.Invoke(existingModel, actionInfo);
             }
             else
             {
-                System.Console.WriteLine($"{typeof(TModel).Name} {id} не является типом {nameof(IssueModel)} и не может быть {actionInfo}! ");
+                System.Console.WriteLine($"{typeof(TModel).Name} {id} не может быть {actionInfo}! ");
             }
         }
     }
@@ -132,7 +136,7 @@ public abstract class BaseManager<TModel> where TModel : BaseModel
     protected virtual void OnDataChangedUpdated(TModel model, string updateInfo)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine($"{typeof(TModel).Name} {model.UniqueId}: {updateInfo}: ");
+        System.Console.WriteLine($"{typeof(TModel).Name} {model.UniqueId}: {updateInfo}");
         Console.ForegroundColor = ConsoleColor.White;
     }
 }
