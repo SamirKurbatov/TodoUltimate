@@ -20,8 +20,6 @@ public class BaseManager<TModel> where TModel : BaseModel
         ChangeDataUpdate += OnDataChangedUpdated;
     }
 
-    public BaseManager() { }
-
     protected event Action<TModel> ModelAdded;
     protected event Action<int> ModelRemoved;
     protected event Action<int> ModelNotFound;

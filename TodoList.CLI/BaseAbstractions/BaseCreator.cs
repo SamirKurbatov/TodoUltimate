@@ -1,6 +1,11 @@
-public abstract class BaseCreator<T>
+public class BaseCreator<T> where T : BaseModel
 {
-    public abstract T Create();
+    public virtual T Create()
+    {
+        Console.Write($"Введите {typeof(T).Name}: ");
+        var title = CheckField($"{typeof(T).Name}");
+        return (T)Activator.CreateInstance(typeof(T), title);
+    }
 
     protected virtual string CheckField(string value)
     {

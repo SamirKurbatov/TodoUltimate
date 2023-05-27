@@ -2,36 +2,42 @@ using TodoList.CLI.Models;
 
 namespace TodoList.CLI
 {
-    public abstract class MainMenu<T> where T : BaseModel
+    public class MainMenu
     {
-        protected BaseManager<T> baseManager;
-        public MainMenu()
+        private BaseManager<T> SetManager<T>(BaseRepository baseRepository, BaseCreator<T> baseCreator) where T : BaseModel
         {
-            baseManager = new BaseManager<T>();
+            return new BaseManager<T>(baseRepository, baseCreator);
         }
 
-        public void PrintMenu(string title)
+        public void Start()
         {
-            Console.Write("Здравствуйте вас приветствует тудулист Курбатова! ");
-
+            Console.WriteLine("Здравствуйте! Вас приветствует Тудулист Курбатова.\n");
             bool isContinue = true;
+            var repository = new JsonRepository("data.json");
 
-            int index = 0;
+            var issueCreator = new BaseCreator<IssueModel>();
+            var groupCreator = new BaseCreator<GroupModel>();
 
-            while (isContinue == true)
+            var issueManager = SetManager(repository, issueCreator);
+            var groupManager = SetManager(repository, groupCreator);
+            while (isContinue)
             {
-                PrintMenu();
+                PrintMainMenu();
                 var input = Console.ReadKey();
                 Console.WriteLine();
                 switch (input.Key)
                 {
                     case ConsoleKey.D1:
+                        issueManager.Print();
                         break;
                     case ConsoleKey.D2:
+                        groupManager.Print();
                         break;
                     case ConsoleKey.D3:
+                        issueManager.Add();
                         break;
                     case ConsoleKey.D4:
+                        groupManager.Add();
                         break;
                     case ConsoleKey.D5:
                         break;
@@ -40,7 +46,7 @@ namespace TodoList.CLI
                     case ConsoleKey.D7:
                         break;
                     default:
-                        Console.WriteLine("Такой клавиши нету, попробуйте еще раз! ");
+                        Console.WriteLine("Такой клавиши нет, попробуйте еще раз!");
                         Console.ReadKey();
                         Console.Clear();
                         break;
@@ -48,143 +54,68 @@ namespace TodoList.CLI
             }
         }
 
-        private void PrintMenu()
+        private void PrintMainMenu()
         {
-            System.Console.WriteLine($"1 - Просмотр групп");
-            System.Console.WriteLine($"2 - Просмотр задач");
-            System.Console.WriteLine($"3 - Добавить задачу");
-            System.Console.WriteLine($"4 - Добавить группу");
-            System.Console.WriteLine($"5 - Управление группами");
-            System.Console.WriteLine($"6 - Управление задачами");
-            System.Console.WriteLine($"7 - Выйти");
+            Console.WriteLine($"1 - Просмотр задач");
+            Console.WriteLine($"2 - Просмотр групп");
+            Console.WriteLine($"3 - Добавить задачу");
+            Console.WriteLine($"4 - Добавить группу");
+            Console.WriteLine($"5 - Управление задачами");
+            Console.WriteLine($"6 - Управление группами");
+            Console.WriteLine($"7 - Выйти");
         }
 
-        protected abstract void PrintEntities();
-        protected abstract void EditMenu(string title);
-        protected abstract void PrintEditMenu();
-    }
 
-    public class GroupMenu : MainMenu<GroupModel>
-    {
-        protected override void PrintEntities()
-        {
-            Console.WriteLine("Группы: ");
-            baseManager.Print();
-        }
+        // protected virtual void EditMenu(string title)
+        // {
+        //     bool isContinue = true;
+        //     int index = 0;
 
-        protected override void EditMenu(string title)
-        {
-            bool isContinue = true;
+        //     while (isContinue)
+        //     {
+        //         var input = Console.ReadKey();
+        //         Console.WriteLine();
+        //         switch (input.Key)
+        //         {
+        //             case ConsoleKey.D1:
+        //                 baseManager.Add();
+        //                 break;
+        //             case ConsoleKey.D2:
+        //                 index = baseManager.InputAndGetIndex($"{title}", "удалить");
+        //                 baseManager.Remove(index);
+        //                 break;
+        //             case ConsoleKey.D3:
+        //                 index = baseManager.InputAndGetIndex($"{title}", "редактировать");
+        //                 baseManager.Edit(index, Console.ReadLine());
+        //                 break;
+        //             case ConsoleKey.D4:
+        //                 isContinue = false;
+        //                 if (isContinue)
+        //                 {
+        //                     Console.WriteLine("Нажмите любую клавишу для выхода из приложения:");
+        //                     Console.ReadLine();
+        //                     return;
+        //                 }
+        //                 break;
+        //             case ConsoleKey.D5:
+        //                 Console.WriteLine();
+        //                 break;
+        //             default:
+        //                 Console.WriteLine("Такой клавиши нет, попробуйте еще раз!");
+        //                 Console.ReadKey();
+        //                 Console.Clear();
+        //                 break;
+        //         }
+        //     }
+        // }
 
-            int index = 0;
-
-            while (isContinue == true)
-            {
-                var input = Console.ReadKey();
-                Console.WriteLine();
-                switch (input.Key)
-                {
-                    case ConsoleKey.D1:
-                        baseManager.Add();
-                        break;
-                    case ConsoleKey.D2:
-                        index = baseManager.InputAndGetIndex("задачу", "удалить");
-                        baseManager.Remove(index);
-                        break;
-                    case ConsoleKey.D3:
-                        index = baseManager.InputAndGetIndex("задачу", "редактировать");
-                        baseManager.Edit(index, Console.ReadLine());
-                        break;
-                    case ConsoleKey.D4:
-                        isContinue = false;
-                        if (isContinue)
-                        {
-                            Console.WriteLine("Нажмите на любую клавишу для выхода из приложения: ");
-                            Console.ReadLine();
-                            return;
-                        }
-                        break;
-                    case ConsoleKey.D5:
-                        Console.WriteLine();
-                        break;
-                    default:
-                        Console.WriteLine("Такой клавиши нету, попробуйте еще раз! ");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                }
-            }
-        }
-
-        protected override void PrintEditMenu()
-        {
-            System.Console.WriteLine($"1 - Редактировать задачу");
-            System.Console.WriteLine($"2 - Удалить задачу");
-            System.Console.WriteLine($"3 - Отметить задачу как выполненная");
-            System.Console.WriteLine($"4 - Перейти к главному меню");
-            System.Console.WriteLine($"5 - Выйти");
-        }
-    }
-
-    public class IssueMenu : MainMenu<IssueModel>
-    {
-        protected override void PrintEntities()
-        {
-            Console.WriteLine("Задачи: ");
-            baseManager.Print();
-        }
-
-        protected override void EditMenu(string title)
-        {
-            bool isContinue = true;
-
-            int index = 0;
-
-            while (isContinue == true)
-            {
-                var input = Console.ReadKey();
-                Console.WriteLine();
-                switch (input.Key)
-                {
-                    case ConsoleKey.D1:
-                        baseManager.Add();
-                        break;
-                    case ConsoleKey.D2:
-                        index = index = baseManager.InputAndGetIndex("задачу", "удалить");
-                        baseManager.Remove(index);
-                        break;
-                    case ConsoleKey.D3:
-                        index = index = baseManager.InputAndGetIndex("задачу", "удалить");
-                        baseManager.Edit(index, Console.ReadLine());
-                        break;
-                    case ConsoleKey.D4:
-                        isContinue = false;
-                        if (isContinue)
-                        {
-                            Console.WriteLine("Нажмите на любую клавишу для выхода из приложения: ");
-                            Console.ReadLine();
-                            return;
-                        }
-                        break;
-                    case ConsoleKey.D5:
-                        Console.WriteLine();
-                        break;
-                    default:
-                        Console.WriteLine("Такой клавиши нету, попробуйте еще раз! ");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                }
-            }
-        }
-
-        protected override void PrintEditMenu()
-        {
-            System.Console.WriteLine($"1 - Редактировать задачу");
-            System.Console.WriteLine($"2 - Удалить задачу");
-            System.Console.WriteLine($"3 - Отметить задачу как выполненная");
-            System.Console.WriteLine($"4 - Перейти к главному меню");
-            System.Console.WriteLine($"5 - Выйти");
-        }
+        // protected virtual void PrintEditMenu()
+        // {
+        //     Console.WriteLine($"1 - Редактировать {typeof(T).Name}");
+        //     Console.WriteLine($"2 - Удалить {typeof(T).Name}");
+        //     Console.WriteLine($"3 - Отметить {typeof(T).Name} как выполненную");
+        //     Console.WriteLine($"4 - Перейти к главному меню");
+        //     Console.WriteLine($"5 - Выйти");
+        // }
     }
 }
