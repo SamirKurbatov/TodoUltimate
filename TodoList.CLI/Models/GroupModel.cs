@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace TodoList.CLI.Models;
 [Serializable]
 public record GroupModel : BaseModel
@@ -8,5 +10,19 @@ public record GroupModel : BaseModel
     public GroupModel(string title) : base(title)
     {
         CreatedDate = DateTime.UtcNow;
+        Issues = new List<IssueModel>();
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine($"Название группы: {Title}, Дата создания: {CreatedDate}, Задачи: ");
+
+        foreach (var issue in Issues)
+        {
+            sb.AppendLine(issue.Title);
+        }
+        return sb.ToString();
     }
 }

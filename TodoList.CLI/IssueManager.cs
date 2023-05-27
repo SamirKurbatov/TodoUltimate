@@ -10,7 +10,7 @@ public class IssueManager : BaseManager<IssueModel>
         ChangeData(id, data =>
         {
             data.IsCompleted = true;
-            repository.Save(models);
+            repository.Save(Models);
         }, "отмечена как выполнена");
     }
 }

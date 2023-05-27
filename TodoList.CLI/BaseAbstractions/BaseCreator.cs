@@ -1,10 +1,13 @@
+using TodoList.CLI;
+
 public class BaseCreator<T> where T : BaseModel
 {
     public virtual T Create()
     {
         Console.Write($"Введите {typeof(T).Name}: ");
         var title = CheckField($"{typeof(T).Name}");
-        return (T)Activator.CreateInstance(typeof(T), title);
+        Type type = typeof(T);
+        return (T)Activator.CreateInstance(type, title);
     }
 
     protected virtual string CheckField(string value)
