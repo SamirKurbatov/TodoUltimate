@@ -13,6 +13,15 @@ public class GroupManager : BaseManager<GroupModel>
     {
         group.Issues.Add(issue);
         OnIssueAdded(issue, group);
+        if (group.Issues.Contains(issue))
+        {
+            Console.WriteLine("Вы пытаетесь добавить существующую задачу");
+            return;
+        }
+        else
+        {
+            repository.Save(Models);
+        }
     }
 
     public void OnIssueAdded(IssueModel issue, GroupModel group)

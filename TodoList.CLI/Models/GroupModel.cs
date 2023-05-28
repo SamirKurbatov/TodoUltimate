@@ -17,11 +17,11 @@ public record GroupModel : BaseModel
     {
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendLine($"Название группы: {Title}, Дата создания: {CreatedDate}, Задачи: ");
+        sb.Append($"Дата создания: {CreatedDate} Название группы: {Title}\nЗадачи:\n");
 
         foreach (var issue in Issues)
         {
-            sb.AppendLine($"Название: {issue.Title} Дата создания: {issue.CreatedDate} Отметка о выполнении:{issue.IsCompleted}");
+            sb.Append($"Дата создания: {issue.CreatedDate}\nНазвание: {issue.Title}\nОтметка о выполнении:{issue.IsCompleted}");
         }
         return sb.ToString();
     }

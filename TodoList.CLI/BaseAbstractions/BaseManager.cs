@@ -21,9 +21,9 @@ public class BaseManager<TModel> where TModel : BaseModel
     public event Action<int>? ModelRemoved;
     public event Action<int>? ModelNotFound;
     public event Action<TModel, string>? ChangeDataUpdate;
-    public TodoData<TModel> Models { get; private set; }
-    public IModelCreator<TModel> Creator { get; set; }
     protected IDataRepository<TModel> repository;
+    public IModelCreator<TModel> Creator { get; set; }
+    public TodoData<TModel> Models { get; private set; }
 
     public virtual void Add()
     {

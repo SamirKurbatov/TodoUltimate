@@ -30,11 +30,11 @@ namespace TodoList.CLI
                 {
                     case ConsoleKey.D1:
                         Console.Clear();
-                        ManageItems(issueManager, "задачи");
+                        ManageItems(issueManager, "задачу");
                         break;
                     case ConsoleKey.D2:
                         Console.Clear();
-                        ManageItems(groupManager, "группы");
+                        ManageItems(groupManager, "группу");
                         break;
                     case ConsoleKey.D3:
                         issueManager.Add();
@@ -82,7 +82,7 @@ namespace TodoList.CLI
                         manager.Print();
                         modelId = GetUserChoice(itemType, "редактировать");
                         var editStr = Console.ReadLine();
-                        manager.Edit(modelId, "редактировать");
+                        manager.Edit(modelId, editStr);
                         Console.ReadKey();
                         break;
                     case ConsoleKey.D2:
@@ -92,7 +92,7 @@ namespace TodoList.CLI
                         Console.ReadKey();
                         break;
                     case ConsoleKey.D3:
-                        if (itemType == "группы")
+                        if (itemType == "группу")
                         {
                             var groupModel = GetModelFromUserChoice(groupManager.Models.Data, itemType, "добавить");
                             if (groupModel != null)
@@ -107,9 +107,9 @@ namespace TodoList.CLI
                                 }
                             }
                         }
-                        else if (itemType == "задачи")
+                        else if (itemType == "задачу")
                         {
-                            var issueModel = GetModelFromUserChoice(issueManager.Models.Data, itemType, "редактировать");
+                            var issueModel = GetModelFromUserChoice(issueManager.Models.Data, itemType, "отметить как выполненную");
                             if (issueModel != null)
                             {
                                 issueManager.ChangeIsDone(modelId);
@@ -132,11 +132,11 @@ namespace TodoList.CLI
         private int GetUserChoice(string title, string actionInfo)
         {
             System.Console.WriteLine($"Выберите {title} которую хотите {actionInfo}");
-            var issueIndex = Convert.ToInt32(Console.ReadLine());
-            return issueIndex;
+            var issueIndex = int.TryParse(Console.ReadLine(), out int index);
+            return index;
         }
 
-        private T GetModelFromUserChoice<T>(Dictionary<int, T> models, string itemType, string actionInfo) where T : BaseModel
+        private T? GetModelFromUserChoice<T>(Dictionary<int, T> models, string itemType, string actionInfo) where T : BaseModel
         {
             modelId = GetUserChoice(itemType, actionInfo);
 
@@ -157,7 +157,7 @@ namespace TodoList.CLI
         {
             Console.WriteLine($"1 - Редактировать {menuType}");
             Console.WriteLine($"2 - Удалить {menuType}");
-            Console.WriteLine($"3 - {(menuType == "задачи" ? "Отметить" : "Добавить в")} {menuType} {(menuType == "задачи" ? "как выполненную" : "задачу")}");
+            Console.WriteLine($"3 - {(menuType == "задачу" ? "Отметить" : "Добавить в")} {menuType} {(menuType == "задачу" ? "как выполненную" : "задачу")}");
             Console.WriteLine($"4 - Перейти к главному меню");
         }
     }
