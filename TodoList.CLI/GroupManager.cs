@@ -4,8 +4,8 @@ namespace TodoList.CLI;
 
 public class GroupManager : BaseManager<GroupModel>
 {
-    public event Action<IssueModel, GroupModel> IssueAdded;
-    public GroupManager(BaseRepository repository, BaseCreator<GroupModel> creator) : base(repository, creator)
+    public event Action<IssueModel, GroupModel>? IssueAdded;
+    public GroupManager(IDataRepository<GroupModel> repository, IModelCreator<GroupModel> creator) : base(repository, creator)
     {
     }
 

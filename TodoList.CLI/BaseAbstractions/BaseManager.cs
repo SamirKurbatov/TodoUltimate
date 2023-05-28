@@ -4,7 +4,7 @@ namespace TodoList.CLI;
 
 public class BaseManager<TModel> where TModel : BaseModel
 {
-    public BaseManager(BaseRepository repository, BaseCreator<TModel> baseCreator)
+    public BaseManager(IDataRepository<TModel> repository, IModelCreator<TModel> baseCreator)
     {
         if (repository == null)
         {
@@ -14,19 +14,16 @@ public class BaseManager<TModel> where TModel : BaseModel
         this.repository = repository;
         Creator = baseCreator;
         Models = GetModels();
-        ModelAdded += OnAdded;
-        ModelRemoved += OnRemoved;
-        ModelNotFound += OnNotFound;
-        ChangeDataUpdate += OnDataChangedUpdated;
+        SubscribeEvents();
     }
 
-    public event Action<TModel> ModelAdded;
-    public event Action<int> ModelRemoved;
-    public event Action<int> ModelNotFound;
-    public event Action<TModel, string> ChangeDataUpdate;
+    public event Action<TModel>? ModelAdded;
+    public event Action<int>? ModelRemoved;
+    public event Action<int>? ModelNotFound;
+    public event Action<TModel, string>? ChangeDataUpdate;
     public TodoData<TModel> Models { get; private set; }
-    public BaseCreator<TModel> Creator { get; set; }
-    protected BaseRepository repository;
+    public IModelCreator<TModel> Creator { get; set; }
+    protected IDataRepository<TModel> repository;
 
     public virtual void Add()
     {
@@ -71,6 +68,14 @@ public class BaseManager<TModel> where TModel : BaseModel
         }
     }
 
+    private void SubscribeEvents()
+    {
+        ModelAdded += OnAdded;
+        ModelRemoved += OnRemoved;
+        ModelNotFound += OnNotFound;
+        ChangeDataUpdate += OnDataChangedUpdated;
+    }
+
     public virtual void Edit(int id, string title)
     {
         ChangeData(id, data =>
@@ -82,63 +87,55 @@ public class BaseManager<TModel> where TModel : BaseModel
 
     protected void ChangeData(int id, Action<TModel> action, string actionInfo)
     {
-        if (Models.Data.ContainsKey(id) == false)
-        {
-            ModelNotFound?.Invoke(id);
-        }
-
         if (Models.Data.TryGetValue(id, out TModel? existingBaseModel))
         {
-            if (existingBaseModel is TModel existingModel)
-            {
-                action?.Invoke(existingModel);
-                ChangeDataUpdate?.Invoke(existingModel, actionInfo);
-            }
-            else
-            {
-                System.Console.WriteLine($"{typeof(TModel).Name} {id} не может быть {actionInfo}! ");
-            }
+            action?.Invoke(existingBaseModel);
+            ChangeDataUpdate?.Invoke(existingBaseModel, actionInfo);
+        }
+        else
+        {
+            ModelNotFound?.Invoke(id);
         }
     }
 
     public TodoData<TModel> GetModels()
     {
-        return repository.Load<TModel>();
+        return repository.Load();
     }
 
     public void Print()
     {
         foreach (var model in Models.Data.OrderBy(x => x.Key))
         {
-            Console.Write($"{model.Key}) {model.Value}\n");
+            Console.WriteLine($"{model.Key}) {model.Value}\n");
         }
     }
 
     protected virtual void OnAdded(TModel model)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine($"{typeof(TModel).Name} добавлен: {model.Title}");
+        System.Console.WriteLine($"{typeof(TModel).Name} под названием {model.Title} добавлен. ");
         Console.ForegroundColor = ConsoleColor.White;
     }
 
     protected virtual void OnRemoved(int id)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine($"{typeof(TModel).Name} удален: {id}");
+        System.Console.WriteLine($"{typeof(TModel).Name} {id} удален. ");
         Console.ForegroundColor = ConsoleColor.White;
     }
 
     protected virtual void OnNotFound(int id)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        System.Console.WriteLine($"{typeof(TModel).Name} не найден(а): {id}");
+        System.Console.WriteLine($"{typeof(TModel).Name} {id} не найден(а): ");
         Console.ForegroundColor = ConsoleColor.White;
     }
 
     protected virtual void OnDataChangedUpdated(TModel model, string updateInfo)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine($"{typeof(TModel).Name} {model.UniqueId}: {updateInfo}");
+        System.Console.WriteLine($"{typeof(TModel).Name} {model.UniqueId} {updateInfo}.");
         Console.ForegroundColor = ConsoleColor.White;
     }
 }

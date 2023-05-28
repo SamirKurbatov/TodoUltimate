@@ -1,7 +1,7 @@
 namespace TodoList.CLI;
 public class IssueManager : BaseManager<IssueModel>
 {
-    public IssueManager(BaseRepository repository, BaseCreator<IssueModel> creator) : base(repository, creator)
+    public IssueManager(IDataRepository<IssueModel> repository, IModelCreator<IssueModel> creator) : base(repository, creator)
     {
     }
 

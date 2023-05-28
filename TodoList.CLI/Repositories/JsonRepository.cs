@@ -3,10 +3,9 @@ using TodoList.CLI.Repositories;
 
 namespace TodoList.CLI;
 
-public class JsonRepository : BaseRepository
+public class JsonRepository<TModel> : BaseRepository<TModel>
 {
-    private readonly string dataFolderPath = "C:/Users/user/Desktop/super-fortnight/TodoList.CLI/Data";
-
+    private readonly string dataFolderPath = AppDomain.CurrentDomain.BaseDirectory;
     private string jsonFilePath;
 
     public JsonRepository(string fileName) : base(fileName)
@@ -14,7 +13,7 @@ public class JsonRepository : BaseRepository
         jsonFilePath = Path.Combine(dataFolderPath, FileName);
     }
 
-    public override TodoData<T> Load<T>()
+    public override TodoData<TModel> Load()
     {
          try
         {
@@ -22,29 +21,29 @@ public class JsonRepository : BaseRepository
             {
                 using (var fs = new FileStream(jsonFilePath, FileMode.OpenOrCreate))
                 {
-                    if (JsonSerializer.Deserialize<TodoData<T>>(fs) is TodoData<T> items)
+                    if (JsonSerializer.Deserialize<TodoData<TModel>>(fs) is TodoData<TModel> items)
                     {
                         return items;
                     }
                     else
                     {
-                        return new TodoData<T>();
+                        return new TodoData<TModel>();
                     }
                 }
             }
             else
             {
-                return new TodoData<T>();
+                return new TodoData<TModel>();
             }
         }
-        catch (JsonException ex)
+        catch (IOException ex)
         {
             System.Console.WriteLine($"Error deserialize file {jsonFilePath}: {ex.Message}");
-            return new TodoData<T>();
+            return new TodoData<TModel>();
         }
     }
 
-    public override void Save<T>(TodoData<T> value)
+    public override void Save(TodoData<TModel> value)
     {
         if (Directory.Exists(dataFolderPath) == false)
         {

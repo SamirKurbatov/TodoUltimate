@@ -9,17 +9,12 @@ namespace TodoList.CLI
 
         private int modelId;
 
-        public MainMenu()
+        public MainMenu(IssueManager issueManager, GroupManager groupManager)
         {
-            var issueRepository = new JsonRepository("issue.json");
-            var groupRepository = new JsonRepository("group.json");
-
-            var issueCreator = new BaseCreator<IssueModel>();
-            var groupCreator = new BaseCreator<GroupModel>();
-
-            issueManager = new IssueManager(issueRepository, issueCreator);
-            groupManager = new GroupManager(groupRepository, groupCreator);
+            this.issueManager = issueManager;
+            this.groupManager = groupManager;
         }
+
         public void Start()
         {
             Console.Clear();
@@ -35,11 +30,11 @@ namespace TodoList.CLI
                 {
                     case ConsoleKey.D1:
                         Console.Clear();
-                        ManageIssues();
+                        ManageItems(issueManager, "задачи");
                         break;
                     case ConsoleKey.D2:
                         Console.Clear();
-                        ManageGroups();
+                        ManageItems(groupManager, "группы");
                         break;
                     case ConsoleKey.D3:
                         issueManager.Add();
@@ -70,89 +65,57 @@ namespace TodoList.CLI
             Console.WriteLine($"5 - Выйти");
         }
 
-        private void ManageIssues()
+        private void ManageItems<T>(BaseManager<T> manager, string itemType) where T : BaseModel
         {
             bool isContinue = true;
             while (isContinue)
             {
                 Console.Clear();
-                PrintEditIssueMenu();
-                issueManager.Print();
+                PrintEditMenu(itemType);
+                manager.Print();
                 var input = Console.ReadKey();
                 Console.WriteLine();
-                switch (input.Key)
-                {
-                    case ConsoleKey.D1:
-                        issueManager.Print();
-                        modelId = InputAndGetIndex("задачу", "редактировать");
-                        var editStr = Console.ReadLine();
-                        issueManager.Edit(modelId, string.IsNullOrWhiteSpace(editStr) == false ? editStr : "пустая строка");
-                        Console.ReadKey();
-                        break;
-                    case ConsoleKey.D2:
-                        issueManager.Print();
-                        modelId = InputAndGetIndex("задачу", "удалить");
-                        issueManager.Remove(modelId);
-                        Console.ReadKey();
-                        break;
-                    case ConsoleKey.D3:
-                        issueManager.Print();
-                        modelId = InputAndGetIndex("задачу", "отметить как выполненную");
-                        issueManager.ChangeIsDone(modelId);
-                        Console.ReadKey();
-                        break;
-                    case ConsoleKey.D4:
-                        isContinue = false;
-                        Console.Clear();
-                        break;
-                    default:
-                        Console.WriteLine("Такой клавиши нет, попробуйте еще раз!");
-                        Console.ReadKey();
-                        break;
-                }
-            }
-        }
 
-        private void ManageGroups()
-        {
-            bool isContinue = true;
-            while (isContinue)
-            {
-                Console.Clear();
-                PrintEditGroupMenu();
-                groupManager.Print();
-                var input = Console.ReadKey();
                 switch (input.Key)
                 {
                     case ConsoleKey.D1:
-                        modelId = InputAndGetIndex("группу", "редактировать");
-                        groupManager.Edit(modelId, Console.ReadLine());
+                        manager.Print();
+                        modelId = GetUserChoice(itemType, "редактировать");
+                        var editStr = Console.ReadLine();
+                        manager.Edit(modelId, "редактировать");
                         Console.ReadKey();
                         break;
                     case ConsoleKey.D2:
-                        modelId = InputAndGetIndex("группу", "удалить");
-                        groupManager.Remove(modelId);
+                        manager.Print();
+                        modelId = GetUserChoice(itemType, "удалить");
+                        manager.Remove(modelId);
                         Console.ReadKey();
                         break;
                     case ConsoleKey.D3:
-                        modelId = InputAndGetIndex("группу", "добавить задачу");
-                        var issueData = issueManager.Models.Data;
-                        var groupData = groupManager.Models.Data;
-                        var groupModel = groupData.FirstOrDefault(x => x.Key == modelId).Value;
-                        if (groupModel != null)
+                        if (itemType == "группы")
                         {
-                            Console.Clear();
-                            issueManager.Print();
-                            modelId = InputAndGetIndex("задачу", "добавить");
-                            var issueModel = issueData.FirstOrDefault(x => x.Key == modelId).Value;
+                            var groupModel = GetModelFromUserChoice(groupManager.Models.Data, itemType, "добавить");
+                            if (groupModel != null)
+                            {
+                                Console.Clear();
+                                issueManager.Print();
+                                var issueModel = GetModelFromUserChoice(issueManager.Models.Data, "задачи", "добавить");
+                                if (issueModel != null)
+                                {
+                                    groupManager.IssueAdded += groupManager.OnIssueAdded;
+                                    groupManager.AddIssueToGroup(issueModel, groupModel);
+                                }
+                            }
+                        }
+                        else if (itemType == "задачи")
+                        {
+                            var issueModel = GetModelFromUserChoice(issueManager.Models.Data, itemType, "редактировать");
                             if (issueModel != null)
                             {
-                                groupManager.IssueAdded += groupManager.OnIssueAdded;
-                                groupManager.AddIssueToGroup(issueModel, groupModel);
+                                issueManager.ChangeIsDone(modelId);
                             }
                         }
                         Console.ReadLine();
-                        // ToDo добавление задачи в группу
                         break;
                     case ConsoleKey.D4:
                         Console.Clear();
@@ -166,26 +129,35 @@ namespace TodoList.CLI
             }
         }
 
-        private int InputAndGetIndex(string title, string actionInfo)
+        private int GetUserChoice(string title, string actionInfo)
         {
             System.Console.WriteLine($"Выберите {title} которую хотите {actionInfo}");
             var issueIndex = Convert.ToInt32(Console.ReadLine());
             return issueIndex;
         }
 
-        private void PrintEditIssueMenu()
+        private T GetModelFromUserChoice<T>(Dictionary<int, T> models, string itemType, string actionInfo) where T : BaseModel
         {
-            Console.WriteLine($"1 - Редактировать задачи");
-            Console.WriteLine($"2 - Удалить задачу");
-            Console.WriteLine($"3 - Отметить задачу как выполненную");
-            Console.WriteLine($"4 - Перейти к главному меню");
+            modelId = GetUserChoice(itemType, actionInfo);
+
+            if (models.TryGetValue(modelId, out T? model))
+            {
+                return model;
+            }
+
+            Console.WriteLine($"Не удалось найти выбранную {itemType}. Повторите попытку.");
+
+            Console.ReadKey();
+
+            return default;
         }
 
-        private void PrintEditGroupMenu()
+
+        private void PrintEditMenu(string menuType)
         {
-            Console.WriteLine($"1 - Редактировать группу");
-            Console.WriteLine($"2 - Удалить группу");
-            Console.WriteLine($"3 - Добавить в группу задачу");
+            Console.WriteLine($"1 - Редактировать {menuType}");
+            Console.WriteLine($"2 - Удалить {menuType}");
+            Console.WriteLine($"3 - {(menuType == "задачи" ? "Отметить" : "Добавить в")} {menuType} {(menuType == "задачи" ? "как выполненную" : "задачу")}");
             Console.WriteLine($"4 - Перейти к главному меню");
         }
     }

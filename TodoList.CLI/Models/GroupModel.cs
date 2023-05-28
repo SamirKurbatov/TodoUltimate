@@ -21,7 +21,7 @@ public record GroupModel : BaseModel
 
         foreach (var issue in Issues)
         {
-            sb.AppendLine(issue.Title);
+            sb.AppendLine($"Название: {issue.Title} Дата создания: {issue.CreatedDate} Отметка о выполнении:{issue.IsCompleted}");
         }
         return sb.ToString();
     }

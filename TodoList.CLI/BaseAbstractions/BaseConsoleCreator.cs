@@ -1,13 +1,13 @@
 using TodoList.CLI;
 
-public class BaseCreator<T> where T : BaseModel
+public class BaseConsoleCreator<TModel> : IModelCreator<TModel>
 {
-    public virtual T Create()
+    public virtual TModel Create()
     {
-        Console.Write($"Введите {typeof(T).Name}: ");
-        var title = CheckField($"{typeof(T).Name}");
-        Type type = typeof(T);
-        return (T)Activator.CreateInstance(type, title);
+        Console.Write($"Введите {typeof(TModel).Name}: ");
+        var title = CheckField($"{typeof(TModel).Name}");
+        Type type = typeof(TModel);
+        return (TModel)Activator.CreateInstance(type, title);
     }
 
     protected virtual string CheckField(string value)
