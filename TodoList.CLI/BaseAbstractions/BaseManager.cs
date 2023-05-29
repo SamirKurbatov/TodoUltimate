@@ -76,11 +76,11 @@ public class BaseManager<TModel> where TModel : BaseModel
         ChangeDataUpdate += OnDataChangedUpdated;
     }
 
-    public virtual void Edit(int id, string title)
+    public virtual void Edit(int id, string changedTitle)
     {
         ChangeData(id, data =>
         {
-            data.Title = title;
+            data.Title = changedTitle;
             repository.Save(Models);
         }, "обновлен");
     }
@@ -103,7 +103,7 @@ public class BaseManager<TModel> where TModel : BaseModel
         return repository.Load();
     }
 
-    public void Print()
+    public void PrintModels()
     {
         foreach (var model in Models.Data.OrderBy(x => x.Key))
         {

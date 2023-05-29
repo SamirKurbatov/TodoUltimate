@@ -1,4 +1,5 @@
 using System.Text;
+using TodoList.CLI.Repositories;
 
 namespace TodoList.CLI.Models;
 [Serializable]
@@ -10,7 +11,7 @@ public record GroupModel : BaseModel
     public GroupModel(string title) : base(title)
     {
         CreatedDate = DateTime.UtcNow;
-        Issues = new List<IssueModel>();
+        Issues = new();
     }
 
     public override string ToString()

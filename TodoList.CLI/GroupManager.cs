@@ -11,17 +11,14 @@ public class GroupManager : BaseManager<GroupModel>
 
     public void AddIssueToGroup(IssueModel issue, GroupModel group)
     {
-        group.Issues.Add(issue);
-        OnIssueAdded(issue, group);
         if (group.Issues.Contains(issue))
         {
             Console.WriteLine("Вы пытаетесь добавить существующую задачу");
             return;
         }
-        else
-        {
-            repository.Save(Models);
-        }
+        group.Issues.Add(issue);
+        OnIssueAdded(issue, group);
+        repository.Save(Models);
     }
 
     public void OnIssueAdded(IssueModel issue, GroupModel group)

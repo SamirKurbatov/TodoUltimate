@@ -10,12 +10,12 @@ public class JsonRepository<TModel> : BaseRepository<TModel>
 
     public JsonRepository(string fileName) : base(fileName)
     {
-        jsonFilePath = Path.Combine(dataFolderPath, FileName);
+        jsonFilePath = Path.Combine(dataFolderPath, fileName);
     }
 
     public override TodoData<TModel> Load()
     {
-         try
+        try
         {
             if (File.Exists(jsonFilePath) == true)
             {

@@ -1,16 +1,16 @@
 using TodoList.CLI;
 
-public class BaseConsoleCreator<TModel> : IModelCreator<TModel>
+public class ConsoleCreator<TModel> : BaseCreator<TModel>
 {
-    public virtual TModel Create()
+    public override TModel Create()
     {
-        Console.Write($"Введите {typeof(TModel).Name}: ");
-        var title = CheckField($"{typeof(TModel).Name}");
+        Console.Write($"Введите {typeof(TModel).Name}");
+        var title = Console.ReadLine();
         Type type = typeof(TModel);
         return (TModel)Activator.CreateInstance(type, title);
     }
 
-    protected virtual string CheckField(string value)
+    public string CheckField(string value)
     {
         string? project;
         do
