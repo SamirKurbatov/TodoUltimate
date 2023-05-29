@@ -13,7 +13,7 @@ public class JsonRepository<TModel> : BaseRepository<TModel>
         jsonFilePath = Path.Combine(dataFolderPath, fileName);
     }
 
-    public override TodoData<TModel> Load()
+    public override TodoData<TModel> LoadData()
     {
         try
         {
@@ -43,7 +43,7 @@ public class JsonRepository<TModel> : BaseRepository<TModel>
         }
     }
 
-    public override void Save(TodoData<TModel> value)
+    public override void SaveData(TodoData<TModel> value)
     {
         if (Directory.Exists(dataFolderPath) == false)
         {

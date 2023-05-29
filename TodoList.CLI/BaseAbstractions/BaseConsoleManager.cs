@@ -2,9 +2,9 @@ using TodoList.CLI.Repositories;
 
 namespace TodoList.CLI;
 
-public class BaseManager<TModel> where TModel : BaseModel
+public class BaseConsoleManager<TModel> : IManager<TModel> where TModel : BaseModel
 {
-    public BaseManager(IDataRepository<TModel> repository, IModelCreator<TModel> baseCreator)
+    public BaseConsoleManager(IDataRepository<TModel> repository, IModelCreator<TModel> baseCreator)
     {
         if (repository == null)
         {
@@ -13,7 +13,7 @@ public class BaseManager<TModel> where TModel : BaseModel
 
         this.repository = repository;
         Creator = baseCreator;
-        Models = GetModels();
+        DataModels = GetModels();
         SubscribeEvents();
     }
 
@@ -23,31 +23,31 @@ public class BaseManager<TModel> where TModel : BaseModel
     public event Action<TModel, string>? ChangeDataUpdate;
     protected IDataRepository<TModel> repository;
     public IModelCreator<TModel> Creator { get; set; }
-    public TodoData<TModel> Models { get; private set; }
+    public TodoData<TModel> DataModels { get; private set; }
 
     public virtual void Add()
     {
         TModel model = Creator.Create();
 
-        var modelIndex = Models.Data.Keys.Count + 1;
+        var modelIndex = DataModels.Data.Keys.Count + 1;
 
-        Models.Data.Add(modelIndex, model);
+        DataModels.Data.Add(modelIndex, model);
 
-        repository.Save(Models);
+        repository.SaveData(DataModels);
 
         ModelAdded?.Invoke(model);
     }
 
     public virtual void Remove(int index)
     {
-        if (Models.Data.ContainsKey(index))
+        if (DataModels.Data.ContainsKey(index))
         {
-            Models.Data.Remove(index);
+            DataModels.Data.Remove(index);
 
             var updatedModels = new TodoData<TModel>();
             int newIndex = 1;
 
-            foreach (KeyValuePair<int, TModel> kvp in Models.Data)
+            foreach (KeyValuePair<int, TModel> kvp in DataModels.Data)
             {
                 if (kvp.Key != index)
                 {
@@ -56,9 +56,9 @@ public class BaseManager<TModel> where TModel : BaseModel
                 }
             }
 
-            Models = updatedModels;
+            DataModels = updatedModels;
 
-            repository.Save(Models);
+            repository.SaveData(DataModels);
 
             ModelRemoved?.Invoke(index);
         }
@@ -81,13 +81,13 @@ public class BaseManager<TModel> where TModel : BaseModel
         ChangeData(id, data =>
         {
             data.Title = changedTitle;
-            repository.Save(Models);
+            repository.SaveData(DataModels);
         }, "обновлен");
     }
 
     protected void ChangeData(int id, Action<TModel> action, string actionInfo)
     {
-        if (Models.Data.TryGetValue(id, out TModel? existingBaseModel))
+        if (DataModels.Data.TryGetValue(id, out TModel? existingBaseModel))
         {
             action?.Invoke(existingBaseModel);
             ChangeDataUpdate?.Invoke(existingBaseModel, actionInfo);
@@ -100,12 +100,12 @@ public class BaseManager<TModel> where TModel : BaseModel
 
     public TodoData<TModel> GetModels()
     {
-        return repository.Load();
+        return repository.LoadData();
     }
 
     public void PrintModels()
     {
-        foreach (var model in Models.Data.OrderBy(x => x.Key))
+        foreach (var model in DataModels.Data.OrderBy(x => x.Key))
         {
             Console.WriteLine($"{model.Key}) {model.Value}\n");
         }
@@ -138,4 +138,6 @@ public class BaseManager<TModel> where TModel : BaseModel
         System.Console.WriteLine($"{typeof(TModel).Name} {model.UniqueId} {updateInfo}.");
         Console.ForegroundColor = ConsoleColor.White;
     }
+
+    
 }

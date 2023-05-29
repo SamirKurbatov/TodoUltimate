@@ -2,7 +2,7 @@ using TodoList.CLI.Models;
 
 namespace TodoList.CLI;
 
-public class GroupManager : BaseManager<GroupModel>
+public class GroupManager : BaseConsoleManager<GroupModel>
 {
     public event Action<IssueModel, GroupModel>? IssueAdded;
     public GroupManager(IDataRepository<GroupModel> repository, IModelCreator<GroupModel> creator) : base(repository, creator)
@@ -18,7 +18,7 @@ public class GroupManager : BaseManager<GroupModel>
         }
         group.Issues.Add(issue);
         OnIssueAdded(issue, group);
-        repository.Save(Models);
+        repository.SaveData(DataModels);
     }
 
     public void OnIssueAdded(IssueModel issue, GroupModel group)

@@ -1,6 +1,6 @@
 namespace TodoList.CLI;
 
-public interface IModelCreator<TModel>
+public interface IModelCreator<T>
 {
-    TModel Create();
+    T Create();
 }

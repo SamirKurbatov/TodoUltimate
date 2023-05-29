@@ -1,26 +1,26 @@
 using TodoList.CLI;
 
-public class ConsoleCreator<TModel> : BaseCreator<TModel>
+public class ConsoleCreator<T> : BaseCreator<T> where T : BaseModel, new()
 {
-    public override TModel Create()
+    public override T Create()
     {
-        Console.Write($"Введите {typeof(TModel).Name}");
-        var title = Console.ReadLine();
-        Type type = typeof(TModel);
-        return (TModel)Activator.CreateInstance(type, title);
+        var name = $"{typeof(T).Name}";
+        Console.Write($"Введите название {name}: ");
+        var title = CheckField(name);
+        return new T { Title = title };
     }
 
-    public string CheckField(string value)
+    private string CheckField(string fieldName)
     {
-        string? project;
+        string? value;
         do
         {
-            project = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(project))
+            value = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(value))
             {
-                Console.WriteLine($"Вы не ввели значение {value} попробуйте еще раз!");
+                Console.WriteLine($"Вы не ввели значение {fieldName} попробуйте еще раз!");
             }
-        } while (string.IsNullOrWhiteSpace(project));
-        return project;
+        } while (string.IsNullOrWhiteSpace(value));
+        return value;
     }
 }

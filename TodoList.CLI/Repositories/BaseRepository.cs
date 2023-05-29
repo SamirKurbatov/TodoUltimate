@@ -9,6 +9,6 @@ public abstract class BaseRepository<TModel> : IDataRepository<TModel>
     {
         FileName = fileName;
     }
-    public abstract void Save(TodoData<TModel> value);
-    public abstract TodoData<TModel> Load();
+    public abstract void SaveData(TodoData<TModel> value);
+    public abstract TodoData<TModel> LoadData();
 }

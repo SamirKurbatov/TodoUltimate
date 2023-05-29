@@ -2,6 +2,9 @@ using TodoList.CLI.Models;
 
 namespace TodoList.CLI
 {
+    /// <summary>
+    /// Класс для работы с
+    /// </summary>
     public class MainMenu
     {
         private readonly IssueManager issueManager;
@@ -65,7 +68,7 @@ namespace TodoList.CLI
             Console.WriteLine($"5 - Выйти");
         }
 
-        private void ManageItems<T>(BaseManager<T> baseManager, string itemType) where T : BaseModel
+        private void ManageItems<T>(BaseConsoleManager<T> baseManager, string itemType) where T : BaseModel
         {
             while (true)
             {
@@ -106,13 +109,13 @@ namespace TodoList.CLI
 
         private void AddIssueToGroup()
         {
-            var groupModel = GetModelFromUserChoice(groupManager.Models.Data, "группу", "добавить");
+            var groupModel = GetModelFromUserChoice(groupManager.DataModels.Data, "группу", "добавить");
 
             if (groupModel != null)
             {
                 Console.Clear();
                 issueManager.PrintModels();
-                var issueModel = GetModelFromUserChoice(issueManager.Models.Data, "задачи", "добавить");
+                var issueModel = GetModelFromUserChoice(issueManager.DataModels.Data, "задачи", "добавить");
                 if (issueModel != null)
                 {
                     groupManager.IssueAdded += groupManager.OnIssueAdded;
@@ -123,16 +126,16 @@ namespace TodoList.CLI
 
         private void MarkTaskDone()
         {
-            var issueModel = GetModelFromUserChoice(issueManager.Models.Data, "задачу", "отметить как выполненную");
+            var issueModel = GetModelFromUserChoice(issueManager.DataModels.Data, "задачу", "отметить как выполненную");
             if (issueModel != null)
             {
                 issueManager.ChangeIsDone(modelId);
             }
         }
 
-        private void EditItem<T>(BaseManager<T> baseManager) where T : BaseModel
+        private void EditItem<T>(BaseConsoleManager<T> baseManager) where T : BaseModel
         {
-            if (baseManager.Models.Data.Count == 0)
+            if (baseManager.DataModels.Data.Count == 0)
             {
                 Console.WriteLine("Пусто, редактировать нечего!");
                 Console.ReadKey();
@@ -140,15 +143,14 @@ namespace TodoList.CLI
                 return;
             }
 
-            baseManager.PrintModels();
             var modelId = GetUserChoice("редактировать");
             baseManager.Edit(modelId, Console.ReadLine());
             Console.ReadKey();
         }
 
-        private void RemoveItem<T>(BaseManager<T> baseManager) where T : BaseModel
+        private void RemoveItem<T>(BaseConsoleManager<T> baseManager) where T : BaseModel
         {
-            if (baseManager.Models.Data.Count == 0)
+            if (baseManager.DataModels.Data.Count == 0)
             {
                 Console.WriteLine("Пусто, удалять нечего!");
                 Console.ReadKey();
@@ -156,7 +158,6 @@ namespace TodoList.CLI
                 return;
             }
 
-            baseManager.PrintModels();
             var modelId = GetUserChoice("удалить");
             baseManager.Remove(modelId);
             Console.ReadKey();

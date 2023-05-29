@@ -1,5 +1,5 @@
 namespace TodoList.CLI;
-public class IssueManager : BaseManager<IssueModel>
+public class IssueManager : BaseConsoleManager<IssueModel>
 {
     public IssueManager(IDataRepository<IssueModel> repository, IModelCreator<IssueModel> creator) : base(repository, creator)
     {
@@ -10,7 +10,7 @@ public class IssueManager : BaseManager<IssueModel>
         ChangeData(id, data =>
         {
             data.IsCompleted = true;
-            repository.Save(Models);
+            repository.SaveData(DataModels);
         }, "отмечена как выполнена");
     }
 }

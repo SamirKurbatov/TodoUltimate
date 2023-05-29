@@ -8,7 +8,7 @@ public record GroupModel : BaseModel
     public DateTime CreatedDate { get; set; }
     public List<IssueModel> Issues { get; set; }
 
-    public GroupModel(string title) : base(title)
+    public GroupModel()
     {
         CreatedDate = DateTime.UtcNow;
         Issues = new();
