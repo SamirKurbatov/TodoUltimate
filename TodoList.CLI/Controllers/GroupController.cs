@@ -1,11 +1,11 @@
 using TodoList.CLI.Models;
-
+using TodoList.CLI.BaseAbstractions;
 namespace TodoList.CLI;
 
-public class GroupManager : BaseConsoleManager<GroupModel>
+public class GroupController : BaseConsoleController<GroupModel>
 {
     public event Action<IssueModel, GroupModel>? IssueAdded;
-    public GroupManager(IDataRepository<GroupModel> repository, IModelCreator<GroupModel> creator) : base(repository, creator)
+    public GroupController(IDataRepository<GroupModel> repository, IModelFactory creator) : base(repository, creator)
     {
     }
 

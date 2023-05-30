@@ -1,7 +1,9 @@
+using TodoList.CLI.BaseAbstractions;
+
 namespace TodoList.CLI;
-public class IssueManager : BaseConsoleManager<IssueModel>
+public class IssueController : BaseConsoleController<IssueModel>
 {
-    public IssueManager(IDataRepository<IssueModel> repository, IModelCreator<IssueModel> creator) : base(repository, creator)
+    public IssueController(IDataRepository<IssueModel> repository, IModelFactory creator) : base(repository, creator)
     {
     }
 

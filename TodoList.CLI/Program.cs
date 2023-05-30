@@ -1,14 +1,15 @@
 ﻿using TodoList.CLI;
+using TodoList.CLI.BaseAbstractions;
 using TodoList.CLI.Models;
 
-var issueRepository = new JsonRepository<IssueModel>("issue.json");
-var groupRepository = new JsonRepository<GroupModel>("group.json");
+IModelFactory issueCreator = new IssueModelFactory();
+IModelFactory groupCreator = new GroupModelFactory();
 
-var issueCreator = new ConsoleCreator<IssueModel>();
-var groupCreator = new ConsoleCreator<GroupModel>();
+IDataRepository<IssueModel> issueRepository = new JsonRepository<IssueModel>("issue.json");
+IDataRepository<GroupModel> groupRepository = new JsonRepository<GroupModel>("group.json");
 
-var issueManager = new IssueManager(issueRepository, issueCreator);
-var groupManager = new GroupManager(groupRepository, groupCreator);
+var issueManager = new IssueController(issueRepository, issueCreator);
+var groupManager = new GroupController(groupRepository, groupCreator);
 
 MainMenu menu = new MainMenu(issueManager, groupManager);
 

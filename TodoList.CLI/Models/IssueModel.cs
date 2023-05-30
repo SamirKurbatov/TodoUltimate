@@ -5,8 +5,11 @@ public record class IssueModel : BaseModel
 
     public bool IsCompleted { get; set; }
 
-    public IssueModel()
+    public string Description { get; private set; }
+
+    public IssueModel(string title, string description) : base(title) 
     {
         CreatedDate = DateTime.UtcNow;
+        Description = description;
     }
 }

@@ -3,7 +3,7 @@ using TodoList.CLI.Repositories;
 
 namespace TodoList.CLI;
 
-public class JsonRepository<TModel> : BaseRepository<TModel>
+public class JsonRepository<T> : BaseRepository<T>
 {
     private readonly string dataFolderPath = AppDomain.CurrentDomain.BaseDirectory;
     private string jsonFilePath;
@@ -13,7 +13,7 @@ public class JsonRepository<TModel> : BaseRepository<TModel>
         jsonFilePath = Path.Combine(dataFolderPath, fileName);
     }
 
-    public override TodoData<TModel> LoadData()
+    public override TodoData<T> LoadData()
     {
         try
         {
@@ -21,29 +21,29 @@ public class JsonRepository<TModel> : BaseRepository<TModel>
             {
                 using (var fs = new FileStream(jsonFilePath, FileMode.OpenOrCreate))
                 {
-                    if (JsonSerializer.Deserialize<TodoData<TModel>>(fs) is TodoData<TModel> items)
+                    if (JsonSerializer.Deserialize<TodoData<T>>(fs) is TodoData<T> items)
                     {
                         return items;
                     }
                     else
                     {
-                        return new TodoData<TModel>();
+                        return new TodoData<T>();
                     }
                 }
             }
             else
             {
-                return new TodoData<TModel>();
+                return new TodoData<T>();
             }
         }
         catch (IOException ex)
         {
             System.Console.WriteLine($"Error deserialize file {jsonFilePath}: {ex.Message}");
-            return new TodoData<TModel>();
+            return new TodoData<T>();
         }
     }
 
-    public override void SaveData(TodoData<TModel> value)
+    public override void SaveData(TodoData<T> value)
     {
         if (Directory.Exists(dataFolderPath) == false)
         {

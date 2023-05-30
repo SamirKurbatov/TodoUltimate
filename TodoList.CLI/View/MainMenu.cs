@@ -1,4 +1,5 @@
 using TodoList.CLI.Models;
+using TodoList.CLI.BaseAbstractions;
 
 namespace TodoList.CLI
 {
@@ -7,12 +8,12 @@ namespace TodoList.CLI
     /// </summary>
     public class MainMenu
     {
-        private readonly IssueManager issueManager;
-        private readonly GroupManager groupManager;
+        private readonly IssueController issueManager;
+        private readonly GroupController groupManager;
 
         private int modelId;
 
-        public MainMenu(IssueManager issueManager, GroupManager groupManager)
+        public MainMenu(IssueController issueManager, GroupController groupManager)
         {
             this.issueManager = issueManager;
             this.groupManager = groupManager;
@@ -68,7 +69,7 @@ namespace TodoList.CLI
             Console.WriteLine($"5 - Выйти");
         }
 
-        private void ManageItems<T>(BaseConsoleManager<T> baseManager, string itemType) where T : BaseModel
+        private void ManageItems<T>(BaseConsoleController<T> baseManager, string itemType) where T : BaseModel
         {
             while (true)
             {
@@ -133,7 +134,7 @@ namespace TodoList.CLI
             }
         }
 
-        private void EditItem<T>(BaseConsoleManager<T> baseManager) where T : BaseModel
+        private void EditItem<T>(BaseConsoleController<T> baseManager) where T : BaseModel
         {
             if (baseManager.DataModels.Data.Count == 0)
             {
@@ -148,7 +149,7 @@ namespace TodoList.CLI
             Console.ReadKey();
         }
 
-        private void RemoveItem<T>(BaseConsoleManager<T> baseManager) where T : BaseModel
+        private void RemoveItem<T>(BaseConsoleController<T> baseManager)   where T : BaseModel
         {
             if (baseManager.DataModels.Data.Count == 0)
             {
@@ -162,12 +163,14 @@ namespace TodoList.CLI
             baseManager.Remove(modelId);
             Console.ReadKey();
         }
+        
         private int GetUserChoice(string actionInfo)
         {
             System.Console.WriteLine($"Выберите элемент который хотите {actionInfo}");
             var issueIndex = int.TryParse(Console.ReadLine(), out int index);
             return index;
         }
+
         private T? GetModelFromUserChoice<T>(Dictionary<int, T> models, string itemType, string actionInfo) where T : BaseModel
         {
             if (models.Values.Count == 0)
@@ -175,6 +178,7 @@ namespace TodoList.CLI
                 System.Console.WriteLine($"Пусто нельзя {actionInfo}");
                 return default;
             }
+            
             modelId = GetUserChoice(actionInfo);
 
             if (models.TryGetValue(modelId, out T? model))
