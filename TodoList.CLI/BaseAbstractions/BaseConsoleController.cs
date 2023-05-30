@@ -2,38 +2,39 @@ using TodoList.CLI.Repositories;
 
 namespace TodoList.CLI.BaseAbstractions;
 
-public class BaseConsoleController<T> : IManager<T> where T : BaseModel
+public class BaseConsoleController<T> : IDataRepository<T> where T : BaseModel
 {
-    public BaseConsoleController(IDataRepository<T> repository, IModelFactory<T> baseFactory)
-    {
-        if (repository == null)
-        {
-            throw new ArgumentNullException(nameof(repository), "Не может иметь пустое значение! ");
-        }
-
-        this.repository = repository;
-        modelFactory = baseFactory;
-        DataModels = GetModels();
-        SubscribeEvents();
-    }
-
     public event Action<T>? ModelAdded;
     public event Action<int>? ModelRemoved;
     public event Action<int>? ModelNotFound;
     public event Action<T, string>? ChangeDataUpdate;
-    protected IDataRepository<T> repository;
-    protected IModelFactory<T> modelFactory;
-    public TodoData<T> DataModels { get; private set; }
+    public BaseConsoleController(IDataRepository<T> repository, IFactoryModel<T> baseFactory)
+    {
+        if (repository == null)
+        {
+            throw new ArgumentNullException(nameof(repository), "Repository cannot be null! ");
+        }
+
+        Repository = repository;
+        ModelFactory = baseFactory;
+        DataModels = LoadData();
+        SubscribeEvents();
+    }
+
+    public IDataRepository<T> Repository { get; set; }
+    public IFactoryModel<T> ModelFactory { get; set; }
+
+    public TodoData<T> DataModels { get; set; }
 
     public virtual void Add()
     {
-        T model = modelFactory.Create();
+        T model = ModelFactory.Create();
 
         var modelIndex = DataModels.Data.Keys.Count + 1;
 
         DataModels.Data.Add(modelIndex, model);
 
-        repository.SaveData(DataModels);
+        SaveData(DataModels);
 
         ModelAdded?.Invoke(model);
     }
@@ -44,21 +45,11 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
         {
             DataModels.Data.Remove(index);
 
-            var updatedModels = new TodoData<T>();
-            int newIndex = 1;
-
-            foreach (KeyValuePair<int, T> kvp in DataModels.Data)
-            {
-                if (kvp.Key != index)
-                {
-                    updatedModels.Data.Add(newIndex, kvp.Value);
-                    newIndex++;
-                }
-            }
+            TodoData<T> updatedModels = GetUpdatedData(index);
 
             DataModels = updatedModels;
 
-            repository.SaveData(DataModels);
+            SaveData(DataModels);
 
             ModelRemoved?.Invoke(index);
         }
@@ -67,13 +58,27 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
             ModelNotFound?.Invoke(index);
         }
     }
+    /// <summary>
+    /// Метод требуется для создания словаря, который вскоре сможет обновлять ключи (int) после удаления задач
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns>Обновленный словарь</returns>
 
-    private void SubscribeEvents()
+    private TodoData<T> GetUpdatedData(int index)
     {
-        ModelAdded += OnAdded;
-        ModelRemoved += OnRemoved;
-        ModelNotFound += OnNotFound;
-        ChangeDataUpdate += OnDataChangedUpdated;
+        var updatedModels = new TodoData<T>();
+        int newIndex = 1;
+
+        foreach (KeyValuePair<int, T> kvp in DataModels.Data)
+        {
+            if (kvp.Key != index)
+            {
+                updatedModels.Data.Add(newIndex, kvp.Value);
+                newIndex++;
+            }
+        }
+
+        return updatedModels;
     }
 
     public virtual void Edit(int id, string changedTitle)
@@ -81,7 +86,7 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
         ChangeData(id, data =>
         {
             data.Title = changedTitle;
-            repository.SaveData(DataModels);
+            SaveData(DataModels);
         }, "обновлен");
     }
 
@@ -98,9 +103,14 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
         }
     }
 
-    public TodoData<T> GetModels()
+    public void SaveData(TodoData<T> value)
     {
-        return repository.LoadData();
+        Repository.SaveData(DataModels);
+    }
+
+    public TodoData<T> LoadData()
+    {
+        return Repository.LoadData();
     }
 
     public void PrintModels()
@@ -110,6 +120,15 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
             Console.WriteLine($"{model.Key}) {model.Value}\n");
         }
     }
+
+    private void SubscribeEvents()
+    {
+        ModelAdded += OnAdded;
+        ModelRemoved += OnRemoved;
+        ModelNotFound += OnNotFound;
+        ChangeDataUpdate += OnDataChangedUpdated;
+    }
+
 
     protected virtual void OnAdded(T model)
     {
@@ -138,4 +157,6 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
         System.Console.WriteLine($"{typeof(T).Name} {model.UniqueId} {updateInfo}.");
         Console.ForegroundColor = ConsoleColor.White;
     }
+
+
 }

@@ -3,7 +3,7 @@ using TodoList.CLI.BaseAbstractions;
 namespace TodoList.CLI;
 public class IssueController : BaseConsoleController<IssueModel>
 {
-    public IssueController(IDataRepository<IssueModel> repository, IModelFactory<IssueModel> creator) : base(repository, creator)
+    public IssueController(IDataRepository<IssueModel> repository, IFactoryModel<IssueModel> creator) : base(repository, creator)
     {
     }
 
@@ -12,7 +12,7 @@ public class IssueController : BaseConsoleController<IssueModel>
         ChangeData(id, data =>
         {
             data.IsCompleted = true;
-            repository.SaveData(DataModels);
+            Repository.SaveData(DataModels);
         }, "отмечена как выполнена");
     }
 }

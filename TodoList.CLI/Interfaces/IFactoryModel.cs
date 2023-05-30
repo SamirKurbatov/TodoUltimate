@@ -1,6 +1,6 @@
 namespace TodoList.CLI;
 
-public interface IModelFactory<T>
+public interface IFactoryModel<T>
 {
     T Create();
 }

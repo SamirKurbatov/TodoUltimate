@@ -1,6 +1,6 @@
 namespace TodoList.CLI.BaseAbstractions;
 
-public class IssueModelFactory : BaseModelFactory<IssueModel>
+public class IssueModelFactory : BaseFactoryModel<IssueModel>
 {
     public override IssueModel Create()
     {
