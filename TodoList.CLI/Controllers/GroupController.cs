@@ -5,7 +5,7 @@ namespace TodoList.CLI;
 public class GroupController : BaseConsoleController<GroupModel>
 {
     public event Action<IssueModel, GroupModel>? IssueAdded;
-    public GroupController(IDataRepository<GroupModel> repository, IModelFactory creator) : base(repository, creator)
+    public GroupController(IDataRepository<GroupModel> repository, IModelFactory<GroupModel> creator) : base(repository, creator)
     {
     }
 

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace TodoList.CLI.BaseAbstractions
 {
-    public abstract class BaseModelFactory : IModelFactory
+    public abstract class BaseModelFactory<T> : IModelFactory<T> where T : BaseModel
     {
-        public abstract BaseModel Create();
+        public abstract T Create();
         protected virtual string CheckModelField(string fieldName)
         {
             string? value;

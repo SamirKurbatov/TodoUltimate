@@ -1,8 +1,8 @@
 namespace TodoList.CLI.BaseAbstractions;
 
-public class IssueModelFactory : BaseModelFactory
+public class IssueModelFactory : BaseModelFactory<IssueModel>
 {
-    public override BaseModel Create()
+    public override IssueModel Create()
     {
         Console.Write("Введите название задачи: ");
         var title = CheckModelField("Название задачи: ");

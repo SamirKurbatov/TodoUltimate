@@ -4,7 +4,7 @@ namespace TodoList.CLI.BaseAbstractions;
 
 public class BaseConsoleController<T> : IManager<T> where T : BaseModel
 {
-    public BaseConsoleController(IDataRepository<T> repository, IModelFactory baseFactory)
+    public BaseConsoleController(IDataRepository<T> repository, IModelFactory<T> baseFactory)
     {
         if (repository == null)
         {
@@ -12,7 +12,7 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
         }
 
         this.repository = repository;
-        Creator = baseFactory;
+        modelFactory = baseFactory;
         DataModels = GetModels();
         SubscribeEvents();
     }
@@ -22,12 +22,12 @@ public class BaseConsoleController<T> : IManager<T> where T : BaseModel
     public event Action<int>? ModelNotFound;
     public event Action<T, string>? ChangeDataUpdate;
     protected IDataRepository<T> repository;
-    public IModelFactory Creator { get; set; }
+    protected IModelFactory<T> modelFactory;
     public TodoData<T> DataModels { get; private set; }
 
     public virtual void Add()
     {
-        T model = (T)Creator.Create();
+        T model = modelFactory.Create();
 
         var modelIndex = DataModels.Data.Keys.Count + 1;
 

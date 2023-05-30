@@ -2,8 +2,8 @@
 using TodoList.CLI.BaseAbstractions;
 using TodoList.CLI.Models;
 
-IModelFactory issueCreator = new IssueModelFactory();
-IModelFactory groupCreator = new GroupModelFactory();
+IModelFactory<IssueModel> issueCreator = new IssueModelFactory();
+IModelFactory<GroupModel> groupCreator = new GroupModelFactory();
 
 IDataRepository<IssueModel> issueRepository = new JsonRepository<IssueModel>("issue.json");
 IDataRepository<GroupModel> groupRepository = new JsonRepository<GroupModel>("group.json");
